@@ -4,10 +4,11 @@ import torch.nn as nn
 from torch.autograd import Variable
 
 class BertEM(nn.Module):
-    def __init__(self, model, m, in_dim):
+    def __init__(self, model, m, in_dim, device):
         super().__init__()
         self.model = BertModel.from_pretrained(model)
-        self.nav = Variable(torch.randn(m, in_dim))
+        with torch.cuda.device(device):
+            self.nav = Variable(torch.randn(m, in_dim)).cuda()
 
     def forward(self, inputs):
         words = inputs
