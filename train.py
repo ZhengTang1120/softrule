@@ -29,7 +29,7 @@ DL_DS = DataLoader(ds, batch_size=opt['batch_size'], collate_fn=collate_batch)
 opt['num_training_steps'] = len(DL_DS)
 opt['num_warmup_steps'] = opt['num_training_steps'] * opt['warmup_prop']
 
-eval_step = max(1, len(opt['num_training_steps']) // args.eval_per_epoch)
+eval_step = max(1, opt['num_training_steps'] // args.eval_per_epoch)
 
 trainer = BERTtrainer(opt)
 for epoch in range(opt['num_epoch']):
@@ -43,7 +43,7 @@ for epoch in range(opt['num_epoch']):
             golds = []
             for db in DL_DS:
                 score, loss = trainer.predict(b)
-                
+
 
 
 
