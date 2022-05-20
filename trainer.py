@@ -98,13 +98,13 @@ class BERTtrainer(Trainer):
         svs = torch.cat([svs, self.encoder.nav.expand(batch_size, -1,self.in_dim)], 1)
         loss = self.criterion(torch.bmm(svs, qv.view(batch_size, -1, 1)), labels.view(batch_size, 1))
 
-        
+        loss_val = loss.item()
         loss.backward()
         self.optimizer.step()
         self.scheduler.step()
         self.optimizer.zero_grad()
         qv = svs = query = support_sents = None
-        return loss.item()
+        return loss_val
 
     def predict(self, batch):
         query, support_sents, labels, N, k, batch_size = unpack_batch(batch, self.opt['cuda'], self.opt['device'])
