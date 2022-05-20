@@ -32,6 +32,7 @@ opt['num_warmup_steps'] = opt['num_training_steps'] * opt['warmup_prop']
 eval_step = max(1, opt['num_training_steps'] // args.eval_per_epoch)
 
 trainer = BERTtrainer(opt)
+i = 0
 for epoch in range(opt['num_epoch']):
     for b in DL_DS:
         trainer.update(b)
@@ -43,6 +44,8 @@ for epoch in range(opt['num_epoch']):
             golds = []
             for db in DL_DS:
                 score, loss = trainer.predict(b)
+                print (score)
+        i += 1
 
 
 
