@@ -20,7 +20,10 @@ class EpisodeDataset(Dataset):
         query = self.queries[idx]
         support_sents = self.support_sents[idx]
         label = self.labels[idx]
-        return {'query':query, 'support_sents':support_sents, 'label':label}     
+        return {'query':query, 'support_sents':support_sents, 'label':label} 
+
+    def get_golds(self):
+        return self.labels    
 
     def parse(self, episodes, labels):
         self.queries = list()

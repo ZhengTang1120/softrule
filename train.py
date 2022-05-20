@@ -40,10 +40,10 @@ for epoch in range(opt['num_epoch']):
             # eval on dev
             print("Evaluating on dev set...")
             preds = []
-            golds = []
             for db in DL_DS:
                 score, loss = trainer.predict(db)
-                print (score.size())
+                print (np.argmax(score.data.cpu().numpy(), axis=1).tolist())
+                preds += np.argmax(score.data.cpu().numpy(), axis=1).tolist()
         i += 1
 
 
