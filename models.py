@@ -1,17 +1,17 @@
 import torch
-from pytorch_pretrained_bert.modeling import BertModel
+from transformers import BertModel
+import torch.nn as nn
 
 class BertEM(nn.Module):
-    def __init__(self):
-        super().__init__(model)
+    def __init__(self, model):
+        super().__init__()
         self.model = BertModel.from_pretrained(model)
 
-    def forward(self, inputs, subj_mask, obj_mask, pool_type):
+    def forward(self, inputs):
         words = inputs
-        h, pooled_output = self.model(words, output_all_encoded_layers=False)
-        v = torch.cat([pool(h, subj_mask.eq(0), type=pool_type), pool(h, obj_mask.eq(0), type=pool_type)], 1)
-        
-        return v
+        output = self.model(words)
+        # v = torch.cat([pool(h, subj_mask.eq(0), type=pool_type), pool(h, obj_mask.eq(0), type=pool_type)], 1)
+        return output.pooler_output
 
 def pool(h, mask, type='max'):
     if type == 'max':

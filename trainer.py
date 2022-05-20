@@ -9,7 +9,8 @@ from torch.autograd import Variable
 import numpy as np
 
 from models import BertEM
-from pytorch_pretrained_bert.optimization import BertAdam
+from transformers import AdamW
+from transformers.optimization import get_linear_schedule_with_warmup
 
 class Trainer(object):
     def __init__(self, opt):
@@ -50,18 +51,23 @@ class Trainer(object):
 def unpack_batch(batch, cuda=False, device=0):
     if cuda:
         with torch.cuda.device(device):
-            query = ?
-            support_sents = ?
+            query = batch[0].cuda()
+            support_sents = batch[1].cuda()
+            labels = batch[2].cuda()
     else:
-        query = ?
-        support_sents = ?
-    return query, support_sents
+        query = batch[0]
+        support_sents = batch[1]
+        labels = batch[2]
+    batch_size = query.size(0)
+    N = support_sents.size(1)
+    k = support_sents.size(2)
+    return query, support_sents, labels, N, k, batch_size
 
 
 class BERTtrainer(Trainer):
     def __init__(self, opt):
-        self.in_dim = 2048
-        self.encoder = BertEM("spanbert-large-cased")
+        self.in_dim = 768
+        self.encoder = BertEM("bert-base-uncased")
         self.criterion = nn.CrossEntropyLoss()
         self.nav = Variable(torch.randn(opt['m'], self.in_dim))
 
@@ -74,34 +80,35 @@ class BERTtrainer(Trainer):
                         if any(nd in n for nd in no_decay)], 'weight_decay': 0.0}
         ]
 
-        self.optimizer = BertAdam(optimizer_grouped_parameters,
-             lr=opt['lr'],
-             warmup=opt['warmup_prop'],
-             t_total= opt['train_batch'] * self.opt['num_epoch'])
+        self.optimizer = AdamW(optimizer_grouped_parameters, lr=opt['lr'])
+        self.scheduler = get_linear_schedule_with_warmup(self.optimizer, 
+            num_warmup_steps=opt['num_warmup_steps'], 
+            num_training_steps=opt['num_training_steps'])
 
     def update(self, batch):
-        query, support_sents = unpack_batch(batch)
+        query, support_sents, labels, N, k, batch_size = unpack_batch(batch)
         self.encoder.train()
         qv = self.encoder(query)
-        svs = self.encoder(support_sents.reshape(batch_size, N*k, -1))
+        svs = self.encoder(support_sents.reshape(batch_size*N*k, -1))
         svs = torch.mean(svs.reshape(batch_size, N, k, -1), 2)
         svs = torch.cat([svs, self.nav.expand(batch_size, -1,self.in_dim)], 1)
+        loss = self.criterion(torch.bmm(svs, qv.view(batch_size, -1, 1)), labels.view(batch_size, 1))
 
-        loss = self.criterion(torch.bmm(svs, qv.view(batch_size, -1, 1)))
+        
         loss.backward()
         self.optimizer.step()
+        self.scheduler.step()
         self.optimizer.zero_grad()
-
         return loss.item()
 
     def predict(self, batch):
-        query, support_sents = unpack_batch(batch)
+        query, support_sents, labels, N, k, batch_size = unpack_batch(batch)
         self.encoder.eval()
         qv = self.encoder(query)
         svs = self.encoder(support_sents.reshape(batch_size, N*k, -1))
         svs = torch.mean(svs.reshape(batch_size, N, k, -1), 2)
         svs = torch.cat([svs, self.nav.expand(batch_size, -1,self.in_dim)], 1)
-        loss = self.criterion(torch.bmm(svs, qv.view(batch_size, -1, 1)))
+        loss = self.criterion(torch.bmm(svs, qv.view(batch_size, -1, 1)), labels.view(batch_size, 1))
 
         scores = torch.bmm(svs, qv.view(batch_size, -1, 1))
         return scores, loss.item()

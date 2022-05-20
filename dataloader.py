@@ -1,7 +1,7 @@
 import torch
 from torch.utils.data import Dataset, DataLoader
 import json
-from transformers import BertTokenizer
+
 
 ENTITY_TOKEN_TO_ID = {'[OBJ-CAUSE_OF_DEATH]': 3, '[OBJ-CITY]': 2, '[OBJ-DATE]': 17, '[OBJ-PERSON]': 14, '[OBJ-URL]': 9, '[OBJ-NATIONALITY]': 16, '[OBJ-ORGANIZATION]': 18, '[OBJ-MISC]': 11, '[OBJ-NUMBER]': 12, '[OBJ-CRIMINAL_CHARGE]': 7, '[SUBJ-ORGANIZATION]': 0, '[SUBJ-PERSON]': 1, '[OBJ-DURATION]': 4, '[OBJ-COUNTRY]': 8, '[OBJ-LOCATION]': 15, '[OBJ-RELIGION]': 10, '[OBJ-TITLE]': 6, '[OBJ-STATE_OR_PROVINCE]': 5, '[OBJ-IDEOLOGY]': 13}
 PAD_ID = 0
@@ -33,7 +33,7 @@ class EpisodeDataset(Dataset):
                 for shot in way:
                     self.support_sents[-1][-1].append(self.parseTACRED(shot))
             self.queries.append(self.parseTACRED(ep['meta_test'][0]))
-            self.labels.append(labels[i][0].index(labels[i][1][0]) if labels[i][1][0] in labels[i][0] else len(labels[i][0]) + 1) # For now, only use one NAV
+            self.labels.append(labels[i][0].index(labels[i][1][0]) if labels[i][1][0] in labels[i][0] else len(labels[i][0])) # For now, only use one NAV
 
     def parseTACRED(self, instance):
         words = list()
@@ -98,9 +98,5 @@ def collate_batch(batch):
         labels.append(d['label'])
     return torch.LongTensor(pad_list(queries)), torch.LongTensor(support_sents), torch.LongTensor(labels)
 
-tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-ds = EpisodeDataset('../Few_Shot_transformation_and_sampling/train_episode.json', tokenizer)
-DL_DS = DataLoader(ds, batch_size=2, collate_fn=collate_batch)
-for b in DL_DS:
-    print (b[0].size(), b[1].size(), b[2].size())
+
     
