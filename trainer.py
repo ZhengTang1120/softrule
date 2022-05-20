@@ -117,5 +117,5 @@ class BERTtrainer(Trainer):
 
         scores = torch.bmm(svs, qv.view(batch_size, -1, 1))
         qv = svs = query = support_sents = None
-        return scores
+        return scores, loss
 
