@@ -103,7 +103,7 @@ class BERTtrainer(Trainer):
         query, support_sents, labels, N, k, batch_size = unpack_batch(batch)
         self.encoder.eval()
         qv = self.encoder(query)
-        svs = self.encoder(support_sents.reshape(batch_size, N*k, -1))
+        svs = self.encoder(support_sents.reshape(batch_size*N*k, -1))
         svs = torch.mean(svs.reshape(batch_size, N, k, -1), 2)
         svs = torch.cat([svs, self.encoder.nav.expand(batch_size, -1,self.in_dim)], 1)
         loss = self.criterion(torch.bmm(svs, qv.view(batch_size, -1, 1)), labels.view(batch_size, 1))
