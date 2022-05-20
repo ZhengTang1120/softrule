@@ -103,6 +103,7 @@ class BERTtrainer(Trainer):
         self.optimizer.step()
         self.scheduler.step()
         self.optimizer.zero_grad()
+        qv = svs = query = support_sents = None
         return loss.item()
 
     def predict(self, batch):
