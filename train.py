@@ -9,7 +9,7 @@ parser.add_argument('--data', type=str, default='data/train_episode.json')
 parser.set_defaults(lower=False)
 parser.add_argument('--m', type=int, default=1, help='MNAV.')
 parser.add_argument('--lr', type=float, default=1.0, help='Applies to sgd and adagrad.')
-parser.add_argument('--num_epoch', type=int, default=100, help='Number of total training epochs.')
+parser.add_argument('--num_epoch', type=int, default=10, help='Number of total training epochs.')
 parser.add_argument('--batch_size', type=int, default=50, help='Training batch size.')
 parser.add_argument('--info', type=str, default='', help='Optional info for the experiment.')
 parser.add_argument('--cuda', type=bool, default=torch.cuda.is_available())
@@ -42,7 +42,7 @@ for epoch in range(opt['num_epoch']):
             preds = []
             golds = []
             for db in DL_DS:
-                score, loss = trainer.predict(b)
+                score, loss = trainer.predict(db)
                 print (score.size())
         i += 1
 
