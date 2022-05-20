@@ -44,7 +44,7 @@ for epoch in range(opt['num_epoch']):
             golds = []
             for db in DL_DS:
                 score, loss = trainer.predict(b)
-                print (score)
+                print (score.size())
         i += 1
 
 
