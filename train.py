@@ -36,16 +36,16 @@ i = 0
 for epoch in range(opt['num_epoch']):
     for b in DL_DS:
         trainer.update(b)
-
-        if (i + 1) % eval_step == 0:
-            # eval on dev
-            print("Evaluating on dev set...")
-            preds = []
-            golds = []
-            for db in DL_DS:
-                score, loss = trainer.predict(b)
-                print (score.size())
-        i += 1
+        
+        # if (i + 1) % eval_step == 0:
+        #     # eval on dev
+        #     print("Evaluating on dev set...")
+        #     preds = []
+        #     golds = []
+        #     for db in DL_DS:
+        #         score, loss = trainer.predict(b)
+        #         print (score.size())
+        # i += 1
 
 
 
