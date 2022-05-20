@@ -1,11 +1,13 @@
 import torch
 from transformers import BertModel
 import torch.nn as nn
+from torch.autograd import Variable
 
 class BertEM(nn.Module):
-    def __init__(self, model):
+    def __init__(self, model, m, in_dim):
         super().__init__()
         self.model = BertModel.from_pretrained(model)
+        self.nav = Variable(torch.randn(m, in_dim))
 
     def forward(self, inputs):
         words = inputs

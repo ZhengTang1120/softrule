@@ -5,7 +5,6 @@ A trainer class.
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch.autograd import Variable
 import numpy as np
 
 from models import BertEM
@@ -67,9 +66,8 @@ def unpack_batch(batch, cuda=False, device=0):
 class BERTtrainer(Trainer):
     def __init__(self, opt):
         self.in_dim = 768
-        self.encoder = BertEM("bert-base-uncased")
+        self.encoder = BertEM("bert-base-uncased", opt['m'], self.in_dim)
         self.criterion = nn.CrossEntropyLoss()
-        self.nav = Variable(torch.randn(opt['m'], self.in_dim))
 
         param_optimizer = list(self.encoder.named_parameters())
         no_decay = ['bias', 'LayerNorm.bias', 'LayerNorm.weight']
@@ -91,7 +89,7 @@ class BERTtrainer(Trainer):
         qv = self.encoder(query)
         svs = self.encoder(support_sents.reshape(batch_size*N*k, -1))
         svs = torch.mean(svs.reshape(batch_size, N, k, -1), 2)
-        svs = torch.cat([svs, self.nav.expand(batch_size, -1,self.in_dim)], 1)
+        svs = torch.cat([svs, self.encoder.nav.expand(batch_size, -1,self.in_dim)], 1)
         loss = self.criterion(torch.bmm(svs, qv.view(batch_size, -1, 1)), labels.view(batch_size, 1))
 
         
@@ -99,6 +97,7 @@ class BERTtrainer(Trainer):
         self.optimizer.step()
         self.scheduler.step()
         self.optimizer.zero_grad()
+        print (loss, self.optimizer.param_groups[0]['lr'])
         return loss.item()
 
     def predict(self, batch):
@@ -107,7 +106,7 @@ class BERTtrainer(Trainer):
         qv = self.encoder(query)
         svs = self.encoder(support_sents.reshape(batch_size, N*k, -1))
         svs = torch.mean(svs.reshape(batch_size, N, k, -1), 2)
-        svs = torch.cat([svs, self.nav.expand(batch_size, -1,self.in_dim)], 1)
+        svs = torch.cat([svs, self.encoder.nav.expand(batch_size, -1,self.in_dim)], 1)
         loss = self.criterion(torch.bmm(svs, qv.view(batch_size, -1, 1)), labels.view(batch_size, 1))
 
         scores = torch.bmm(svs, qv.view(batch_size, -1, 1))
