@@ -106,7 +106,7 @@ class BERTtrainer(Trainer):
         return loss.item()
 
     def predict(self, batch):
-        query, support_sents, labels, N, k, batch_size = unpack_batch(batch)
+        query, support_sents, labels, N, k, batch_size = unpack_batch(batch, self.opt['cuda'], self.opt['device'])
         self.encoder.eval()
         qv = self.encoder(query)
         svs = self.encoder(support_sents.reshape(batch_size*N*k, -1))
