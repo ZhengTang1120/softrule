@@ -67,7 +67,7 @@ class BERTtrainer(Trainer):
     def __init__(self, opt):
         self.opt = opt
         self.in_dim = 768
-        self.encoder = BertEM("bert-base-uncased", opt['m'], self.in_dim)
+        self.encoder = BertEM("bert-base-uncased", opt['m'], self.in_dim, opt['device'])
         self.criterion = nn.CrossEntropyLoss()
 
         param_optimizer = list(self.encoder.named_parameters())
