@@ -65,6 +65,7 @@ def unpack_batch(batch, cuda=False, device=0):
 
 class BERTtrainer(Trainer):
     def __init__(self, opt):
+        self.opt = opt
         self.in_dim = 768
         self.encoder = BertEM("bert-base-uncased", opt['m'], self.in_dim)
         self.criterion = nn.CrossEntropyLoss()
@@ -83,8 +84,13 @@ class BERTtrainer(Trainer):
             num_warmup_steps=opt['num_warmup_steps'], 
             num_training_steps=opt['num_training_steps'])
 
+        if opt['cuda']:
+            with torch.cuda.device(self.opt['device']):
+                self.encoder.cuda()
+                self.criterion.cuda()
+
     def update(self, batch):
-        query, support_sents, labels, N, k, batch_size = unpack_batch(batch)
+        query, support_sents, labels, N, k, batch_size = unpack_batch(batch, self.opt['cuda'], self.opt['device'])
         self.encoder.train()
         qv = self.encoder(query)
         svs = self.encoder(support_sents.reshape(batch_size*N*k, -1))
