@@ -97,7 +97,6 @@ class BERTtrainer(Trainer):
         self.optimizer.step()
         self.scheduler.step()
         self.optimizer.zero_grad()
-        print (loss, self.optimizer.param_groups[0]['lr'])
         return loss.item()
 
     def predict(self, batch):
