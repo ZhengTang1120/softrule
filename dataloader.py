@@ -1,0 +1,106 @@
+import torch
+from torch.utils.data import Dataset, DataLoader
+import json
+from transformers import BertTokenizer
+
+ENTITY_TOKEN_TO_ID = {'[OBJ-CAUSE_OF_DEATH]': 3, '[OBJ-CITY]': 2, '[OBJ-DATE]': 17, '[OBJ-PERSON]': 14, '[OBJ-URL]': 9, '[OBJ-NATIONALITY]': 16, '[OBJ-ORGANIZATION]': 18, '[OBJ-MISC]': 11, '[OBJ-NUMBER]': 12, '[OBJ-CRIMINAL_CHARGE]': 7, '[SUBJ-ORGANIZATION]': 0, '[SUBJ-PERSON]': 1, '[OBJ-DURATION]': 4, '[OBJ-COUNTRY]': 8, '[OBJ-LOCATION]': 15, '[OBJ-RELIGION]': 10, '[OBJ-TITLE]': 6, '[OBJ-STATE_OR_PROVINCE]': 5, '[OBJ-IDEOLOGY]': 13}
+PAD_ID = 0
+
+class EpisodeDataset(Dataset):
+    def __init__(self, filename, tokenizer):
+        super(EpisodeDataset).__init__()
+        f = json.load(open(filename))
+        self.tokenizer = tokenizer
+        self.parse(f[0], f[2])
+
+    def __len__(self):
+        return len(self.labels)
+
+    def __getitem__(self, idx):
+        query = self.queries[idx]
+        support_sents = self.support_sents[idx]
+        label = self.labels[idx]
+        return {'query':query, 'support_sents':support_sents, 'label':label}     
+
+    def parse(self, episodes, labels):
+        self.queries = list()
+        self.support_sents = list()
+        self.labels = list()
+        for i, ep in enumerate(episodes):
+            self.support_sents.append([])
+            for way in ep['meta_train']:
+                self.support_sents[-1].append([])
+                for shot in way:
+                    self.support_sents[-1][-1].append(self.parseTACRED(shot))
+            self.queries.append(self.parseTACRED(ep['meta_test'][0]))
+            self.labels.append(labels[i][0].index(labels[i][1][0]) if labels[i][1][0] in labels[i][0] else len(labels[i][0]) + 1) # For now, only use one NAV
+
+    def parseTACRED(self, instance):
+        words = list()
+        ss, se = instance['subj_start'], instance['subj_end']
+        os, oe = instance['obj_start'], instance['obj_end']
+
+        for i, t in enumerate(instance['token']):
+            if i == ss:
+                words.append("[unused%d]"%(ENTITY_TOKEN_TO_ID['[SUBJ-'+instance['subj_type']+']']+1))
+            if i == os:
+                words.append("[unused%d]"%(ENTITY_TOKEN_TO_ID['[OBJ-'+instance['obj_type']+']']+1))
+            if i>=ss and i<=se:
+                pass
+            elif i>=os and i<=oe:
+                pass
+            else:
+                t = convert_token(t)
+                for j, sub_token in enumerate(self.tokenizer.tokenize(t)):
+                    words.append(sub_token)
+        
+        words = ['[CLS]'] + words + ['[SEP]']
+        tokens = self.tokenizer.convert_tokens_to_ids(words)
+        # if len(tokens) > self.opt['max_length']:
+        #     tokens = tokens[:self.opt['max_length']]
+
+        return tokens
+
+def convert_token(token):
+    """ Convert PTB tokens to normal tokens """
+    if (token.lower() == '-lrb-'):
+            return '('
+    elif (token.lower() == '-rrb-'):
+        return ')'
+    elif (token.lower() == '-lsb-'):
+        return '['
+    elif (token.lower() == '-rsb-'):
+        return ']'
+    elif (token.lower() == '-lcb-'):
+        return '{'
+    elif (token.lower() == '-rcb-'):
+        return '}'
+    return token
+
+def pad_list(tokens_list, token_len=None):
+    if token_len is None:
+        token_len = max([len(x) for x in tokens_list])
+    pad_tokens_list = [[0 for _ in range(token_len)] for _ in tokens_list]
+    for i, t in enumerate(tokens_list):
+        pad_tokens_list[i][:len(t)] = t
+    return pad_tokens_list
+
+def collate_batch(batch):
+    queries = list()
+    support_sents = list()
+    labels = list()
+    max_ss_l = max([max([max([len(s) for s in ss]) for ss in d['support_sents']]) for d in batch])
+    for d in batch:
+        queries.append(d['query'])
+        support_sents.append([])
+        for ss in d['support_sents']:
+            support_sents[-1].append(pad_list(ss, max_ss_l))
+        labels.append(d['label'])
+    return torch.LongTensor(pad_list(queries)), torch.LongTensor(support_sents), torch.LongTensor(labels)
+
+tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+ds = EpisodeDataset('../Few_Shot_transformation_and_sampling/train_episode.json', tokenizer)
+DL_DS = DataLoader(ds, batch_size=2, collate_fn=collate_batch)
+for b in DL_DS:
+    print (b[0].size(), b[1].size(), b[2].size())
+    
