@@ -46,7 +46,6 @@ curr_acc = 0
 for epoch in range(opt['num_epoch']):
     for b in train_batches:
         loss = trainer.update(b)
-        print (loss)
         if (i + 1) % eval_step == 0:
             # eval on dev
             print("Evaluating on dev set...")
@@ -59,7 +58,7 @@ for epoch in range(opt['num_epoch']):
             acc = sum([np[i] == ng[i] for i in range(len(np))])/len(np)
             if acc > curr_acc:
                 curr_acc = acc
-                print (acc)
+                print ("current accuracy: %f"%acc)
                 trainer.save(opt['save_dir']+'/best_model.pt')
         i += 1
 
