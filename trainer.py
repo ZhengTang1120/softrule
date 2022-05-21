@@ -66,7 +66,7 @@ def unpack_batch(batch, cuda=False, device=0):
 class BERTtrainer(Trainer):
     def __init__(self, opt):
         self.opt = opt
-        self.in_dim = 768
+        self.in_dim = 768 * 2
         self.encoder = BertEM("bert-base-uncased", opt['m'], self.in_dim, opt['device'])
         self.criterion = nn.CrossEntropyLoss()
 
