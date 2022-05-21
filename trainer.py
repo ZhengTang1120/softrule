@@ -8,7 +8,7 @@ import torch.nn.functional as F
 import numpy as np
 
 from models import BertEM
-from transformers import AdamW
+from transformers import AdamW, BertConfig
 from transformers.optimization import get_linear_schedule_with_warmup
 
 class Trainer(object):
@@ -66,10 +66,11 @@ def unpack_batch(batch, cuda=False, device=0):
 class BERTtrainer(Trainer):
     def __init__(self, opt):
         self.opt = opt
-        self.in_dim = 768 * 2
+        config = BertConfig.from_pretrained(opt['bert'])
+        self.encoder = BertEM(opt['bert'], opt['m'], self.in_dim)
+        self.in_dim = config.hidden_size * 2
         with torch.cuda.device(opt['device']):
             self.nav = torch.rand((opt['m'], self.in_dim), requires_grad=True, device="cuda")
-        self.encoder = BertEM("bert-base-uncased", opt['m'], self.in_dim)
         self.criterion = nn.CrossEntropyLoss()
 
         param_optimizer = list(self.encoder.named_parameters())
