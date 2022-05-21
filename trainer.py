@@ -110,12 +110,13 @@ class BERTtrainer(Trainer):
     def predict(self, batch):
         query, support_sents, labels, N, k, batch_size = unpack_batch(batch, self.opt['cuda'], self.opt['device'])
         self.encoder.eval()
-        qv = self.encoder(query)
-        svs = self.encoder(support_sents.view(batch_size*N*k, -1))
-        svs = torch.mean(svs.view(batch_size, N, k, -1), 2)
-        svs = torch.cat([svs, self.nav.expand(batch_size, -1,self.in_dim)], 1)
-        scores = torch.bmm(svs, qv.view(batch_size, -1, 1))
-        loss = self.criterion(scores, labels.view(batch_size, 1)).item()
-        qv = svs = query = support_sents = None
-        return scores, loss
+        with torch.no_grad():
+            qv = self.encoder(query)
+            svs = self.encoder(support_sents.view(batch_size*N*k, -1))
+            svs = torch.mean(svs.view(batch_size, N, k, -1), 2)
+            svs = torch.cat([svs, self.nav.expand(batch_size, -1,self.in_dim)], 1)
+            scores = torch.bmm(svs, qv.view(batch_size, -1, 1))
+            loss = self.criterion(scores, labels.view(batch_size, 1)).item()
+            qv = svs = query = support_sents = None
+            return scores, loss
 
