@@ -110,9 +110,11 @@ class BERTtrainer(Trainer):
         self.encoder.eval()
         qv = self.encoder(query)
         svs = self.encoder(support_sents.view(batch_size*N*k, -1))
+        print (svs)
         svs = torch.mean(svs.view(batch_size, N, k, -1), 2)
+        print (svs)
         svs = torch.cat([svs, self.encoder.nav.expand(batch_size, -1,self.in_dim)], 1)
-
+        print (svs)
         scores = torch.bmm(svs, qv.view(batch_size, -1, 1))
         loss = self.criterion(scores, labels.view(batch_size, 1)).item()
         qv = svs = query = support_sents = None
