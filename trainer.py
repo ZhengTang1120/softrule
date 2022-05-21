@@ -72,7 +72,7 @@ class BERTtrainer(Trainer):
         self.encoder = BertEM("bert-base-uncased", opt['m'], self.in_dim)
         self.criterion = nn.CrossEntropyLoss()
 
-        param_optimizer = list(self.encoder.named_parameters(), elf.nav.named_parameters())
+        param_optimizer = list(self.encoder.named_parameters(), self.nav.named_parameters())
         no_decay = ['bias', 'LayerNorm.bias', 'LayerNorm.weight']
         optimizer_grouped_parameters = [
             {'params': [p for n, p in param_optimizer
