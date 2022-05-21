@@ -68,7 +68,7 @@ class BERTtrainer(Trainer):
         self.opt = opt
         self.in_dim = 768 * 2
         with torch.cuda.device(opt['device']):
-            self.nav = torch.rand((opt['m'], self.in_dim), requires_grad=True).cuda()
+            self.nav = torch.rand((opt['m'], self.in_dim), requires_grad=True, device="cuda")
         self.encoder = BertEM("bert-base-uncased", opt['m'], self.in_dim)
         self.criterion = nn.CrossEntropyLoss()
 
