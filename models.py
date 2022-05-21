@@ -11,6 +11,7 @@ class BertEM(nn.Module):
             self.nav = Variable(torch.randn(m, in_dim)).cuda()
 
     def forward(self, words):
+        print (words)
         output = self.model(words)
         print (output)
         h = output.last_hidden_state
