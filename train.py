@@ -43,7 +43,6 @@ eval_step = max(1, opt['num_training_steps'] // args.eval_per_epoch)
 trainer = BERTtrainer(opt)
 i = 0
 curr_acc = 0
-trainer.load(opt['save_dir']+'/best_model.pt')
 for epoch in range(opt['num_epoch']):
     for b in train_batches:
         loss = trainer.update(b)
