@@ -43,6 +43,7 @@ for epoch in range(opt['num_epoch']):
             preds = []
             for db in DL_DS:
                 score, loss = trainer.predict(db)
+                print (score)
                 print (np.argmax(score.squeeze(2).data.cpu().numpy(), axis=1).tolist())
                 preds += np.argmax(score.squeeze(2).data.cpu().numpy(), axis=1).tolist()
             print (preds, ds.get_golds())
