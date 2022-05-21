@@ -35,10 +35,10 @@ class EpisodeDataset(Dataset):
                 self.support_sents[-1].append([])
                 for shot in way:
                     self.support_sents[-1][-1].append(self.parseTACRED(shot))
-            self.queries.append(self.parseTACRED(ep['meta_test'][0], 'q'))
+            self.queries.append(self.parseTACRED(ep['meta_test'][0]))
             self.labels.append(labels[i][0].index(labels[i][1][0]) if labels[i][1][0] in labels[i][0] else len(labels[i][0])) # For now, only use one NAV
 
-    def parseTACRED(self, instance, d='w'):
+    def parseTACRED(self, instance):
         words = list()
         ss, se = instance['subj_start'], instance['subj_end']
         os, oe = instance['obj_start'], instance['obj_end']
@@ -58,11 +58,7 @@ class EpisodeDataset(Dataset):
                     words.append(sub_token)
         
         words = ['[CLS]'] + words + ['[SEP]']
-        
         tokens = self.tokenizer.convert_tokens_to_ids(words)
-        if d == 'q':
-            print (words)
-            print (tokens)
         # if len(tokens) > self.opt['max_length']:
         #     tokens = tokens[:self.opt['max_length']]
 
