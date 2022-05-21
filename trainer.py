@@ -113,9 +113,7 @@ class BERTtrainer(Trainer):
         self.encoder.eval()
         with torch.no_grad():
             qv = self.encoder(query)
-            print (qv)
             svs = self.encoder(support_sents.view(batch_size*N*k, -1))
-            print (svs)
             svs = torch.mean(svs.view(batch_size, N, k, -1), 2)
             svs = torch.cat([svs, self.nav.expand(batch_size, -1,self.in_dim)], 1)
             scores = torch.bmm(svs, qv.view(batch_size, -1, 1))
