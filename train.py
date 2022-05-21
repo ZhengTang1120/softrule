@@ -55,7 +55,7 @@ for epoch in range(opt['num_epoch']):
                 preds += np.argmax(score.squeeze(2).data.cpu().numpy(), axis=1).tolist()
             nrp = [p == 5 for p in preds]
             nrg = [g == 5 for g in dev_set.get_golds()]
-            acc = sum([nrp[i] == nrg[i] for i in range(len(np))])/len(np)
+            acc = sum([nrp[i] == nrg[i] for i in range(len(nrp))])/len(nrp)
             if acc > curr_acc:
                 curr_acc = acc
                 print ("current accuracy: %f"%acc)
