@@ -98,6 +98,7 @@ class BERTtrainer(Trainer):
         svs = torch.cat([svs, self.encoder.nav.expand(batch_size, -1,self.in_dim)], 1)
         loss = self.criterion(torch.bmm(svs, qv.view(batch_size, -1, 1)), labels.view(batch_size, 1))
         loss_val = loss.item()
+        print (self.encoder.nav)
         loss.backward()
         self.optimizer.step()
         self.scheduler.step()
