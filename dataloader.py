@@ -58,6 +58,7 @@ class EpisodeDataset(Dataset):
                     words.append(sub_token)
         
         words = ['[CLS]'] + words + ['[SEP]']
+        print (words)
         tokens = self.tokenizer.convert_tokens_to_ids(words)
         # if len(tokens) > self.opt['max_length']:
         #     tokens = tokens[:self.opt['max_length']]
