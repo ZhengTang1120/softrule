@@ -35,8 +35,8 @@ trainer = BERTtrainer(opt)
 i = 0
 for epoch in range(opt['num_epoch']):
     for b in DL_DS:
-        trainer.update(b)
-
+        loss = trainer.update(b)
+        print (loss)
         if (i + 1) % eval_step == 0:
             # eval on dev
             print("Evaluating on dev set...")

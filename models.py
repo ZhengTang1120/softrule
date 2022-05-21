@@ -10,8 +10,7 @@ class BertEM(nn.Module):
         with torch.cuda.device(device):
             self.nav = Variable(torch.randn(m, in_dim)).cuda()
 
-    def forward(self, inputs):
-        words = inputs
+    def forward(self, words):
         output = self.model(words)
         # v = torch.cat([pool(h, subj_mask.eq(0), type=pool_type), pool(h, obj_mask.eq(0), type=pool_type)], 1)
         return output.pooler_output
