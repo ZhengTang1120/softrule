@@ -46,7 +46,6 @@ for epoch in range(opt['num_epoch']):
             for db in dev_batches:
                 score, loss = trainer.predict(db)
                 print (score)
-                print (np.argmax(score.squeeze(2).data.cpu().numpy(), axis=1).tolist())
                 preds += np.argmax(score.squeeze(2).data.cpu().numpy(), axis=1).tolist()
         i += 1
 
