@@ -72,8 +72,16 @@ class BERTtrainer(Trainer):
         self.encoder = BertEM("bert-base-uncased", opt['m'], self.in_dim)
         self.criterion = nn.CrossEntropyLoss()
 
-        params = self.encoder.parameters() + self.nav
-        self.optimizer = AdamW(params, lr=opt['lr'])
+        param_optimizer = list(self.encoder.named_parameters())
+        no_decay = ['bias', 'LayerNorm.bias', 'LayerNorm.weight']
+        optimizer_grouped_parameters = [
+            {'params': [p for n, p in param_optimizer
+                        if not any(nd in n for nd in no_decay)], 'weight_decay': 0.01},
+            {'params': [p for n, p in param_optimizer
+                        if any(nd in n for nd in no_decay)], 'weight_decay': 0.0}
+        ]
+        print (optimizer_grouped_parameters)
+        self.optimizer = AdamW(optimizer_grouped_parameters, lr=opt['lr'])
         self.scheduler = get_linear_schedule_with_warmup(self.optimizer, 
             num_warmup_steps=opt['num_warmup_steps'], 
             num_training_steps=opt['num_training_steps'])
