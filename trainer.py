@@ -27,18 +27,16 @@ class Trainer(object):
         except BaseException:
             print("Cannot load model from {}".format(filename))
             exit()
-        self.classifier.load_state_dict(checkpoint['classifier'])
         self.encoder.load_state_dict(checkpoint['encoder'])
-        self.tagger.load_state_dict(checkpoint['tagger'])
+        self.nav.load_state_dict(checkpoint['nav'])
         device = self.opt['device']
         self.opt = checkpoint['config']
         self.opt['device'] = device
 
     def save(self, filename):
         params = {
-                'classifier': self.classifier.state_dict(),
                 'encoder': self.encoder.state_dict(),
-                'tagger': self.tagger.state_dict(),
+                'nav': self.nav.state_dict(),
                 'config': self.opt,
                 }
         try:
