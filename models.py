@@ -12,6 +12,7 @@ class BertEM(nn.Module):
 
     def forward(self, words):
         output = self.model(words)
+        print (output)
         # v = torch.cat([pool(h, subj_mask.eq(0), type=pool_type), pool(h, obj_mask.eq(0), type=pool_type)], 1)
         return output.pooler_output
 
