@@ -4,6 +4,7 @@ from trainer import BERTtrainer
 import numpy as np
 
 import argparse
+import os
 
 def ensure_dir(d, verbose=True):
     if not os.path.exists(d):
