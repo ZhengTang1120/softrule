@@ -28,7 +28,7 @@ class Trainer(object):
             print("Cannot load model from {}".format(filename))
             exit()
         self.encoder.load_state_dict(checkpoint['encoder'])
-        self.nav.load_state_dict(checkpoint['nav'])
+        self.nav = checkpoint['nav']
         device = self.opt['device']
         self.opt = checkpoint['config']
         self.opt['device'] = device
@@ -36,7 +36,7 @@ class Trainer(object):
     def save(self, filename):
         params = {
                 'encoder': self.encoder.state_dict(),
-                'nav': self.nav.state_dict(),
+                'nav': self.nav.data,
                 'config': self.opt,
                 }
         try:
