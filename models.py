@@ -13,12 +13,6 @@ class BertEM(nn.Module):
         h = output.last_hidden_state
         subj_mask = torch.logical_and(words.unsqueeze(2).gt(0), words.unsqueeze(2).lt(3))
         obj_mask = torch.logical_and(words.unsqueeze(2).gt(2), words.unsqueeze(2).lt(20))
-        # for i, x in enumerate(torch.sum(subj_mask, 1)):
-        #     if x[0].item() == 0:
-        #         print ("subj missing", words[i])
-        # for i, x in enumerate(torch.sum(obj_mask, 1)):
-        #     if x[0].item() == 0:
-        #         print ("obj missing", words[i])
         v = torch.cat([pool(h, subj_mask.eq(0), type='avg'), pool(h, obj_mask.eq(0), type='avg')], 1)
         return v
 
