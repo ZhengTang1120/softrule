@@ -32,7 +32,7 @@ args = parser.parse_args()
 opt = vars(args)
 
 tokenizer = BertTokenizer.from_pretrained(opt['bert'])
-train_set = EpisodeDataset(opt['data_dir']+'train_episode.json', tokenizer)
+train_set = EpisodeDataset(opt['data_dir']+'train_episode_nota_query_only.json', tokenizer)
 train_batches = DataLoader(train_set, batch_size=opt['batch_size'], collate_fn=collate_batch)
 dev_set = EpisodeDataset(opt['data_dir']+'dev_episode.json', tokenizer)
 dev_batches = DataLoader(dev_set, batch_size=1, collate_fn=collate_batch)
@@ -55,7 +55,7 @@ for epoch in range(opt['num_epoch']):
                 score, loss = trainer.predict(db)
                 preds += np.argmax(score.squeeze(2).data.cpu().numpy(), axis=1).tolist()
             np = [p == 5 for p in preds]
-            ng = [g == t for g in dev_set.get_golds()]
+            ng = [g == 5 for g in dev_set.get_golds()]
             acc = sum([np[i] == ng[i] for i in range(len(np))])/len(np)
             if acc > curr_acc:
                 curr_acc = acc
