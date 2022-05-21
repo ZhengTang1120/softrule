@@ -67,10 +67,12 @@ class BERTtrainer(Trainer):
     def __init__(self, opt):
         self.opt = opt
         self.in_dim = 768 * 2
+        with torch.cuda.device(device):
+            self.nav = nn.parameter.Parameter(torch.randn(m, in_dim)).cuda()
         self.encoder = BertEM("bert-base-uncased", opt['m'], self.in_dim, opt['device'])
         self.criterion = nn.CrossEntropyLoss()
 
-        param_optimizer = list(self.encoder.named_parameters())
+        param_optimizer = list(self.encoder.named_parameters(), elf.nav.named_parameters())
         no_decay = ['bias', 'LayerNorm.bias', 'LayerNorm.weight']
         optimizer_grouped_parameters = [
             {'params': [p for n, p in param_optimizer
@@ -95,10 +97,10 @@ class BERTtrainer(Trainer):
         qv = self.encoder(query)
         svs = self.encoder(support_sents.view(batch_size*N*k, -1))
         svs = torch.mean(svs.view(batch_size, N, k, -1), 2)
-        svs = torch.cat([svs, self.encoder.nav.expand(batch_size, -1,self.in_dim)], 1)
+        svs = torch.cat([svs, self.nav.expand(batch_size, -1,self.in_dim)], 1)
         loss = self.criterion(torch.bmm(svs, qv.view(batch_size, -1, 1)), labels.view(batch_size, 1))
         loss_val = loss.item()
-        print (self.encoder.nav)
+        print (self.nav)
         loss.backward()
         self.optimizer.step()
         self.scheduler.step()
@@ -112,7 +114,7 @@ class BERTtrainer(Trainer):
         qv = self.encoder(query)
         svs = self.encoder(support_sents.view(batch_size*N*k, -1))
         svs = torch.mean(svs.view(batch_size, N, k, -1), 2)
-        svs = torch.cat([svs, self.encoder.nav.expand(batch_size, -1,self.in_dim)], 1)
+        svs = torch.cat([svs, self.nav.expand(batch_size, -1,self.in_dim)], 1)
         scores = torch.bmm(svs, qv.view(batch_size, -1, 1))
         loss = self.criterion(scores, labels.view(batch_size, 1)).item()
         qv = svs = query = support_sents = None
