@@ -26,10 +26,10 @@ opt = vars(args)
 
 tokenizer = BertTokenizer.from_pretrained(opt['bert'])
 train_set = EpisodeDataset(opt['data_dir']+'train_episode.json', tokenizer)
-train_batches = DataLoader(ds, batch_size=opt['batch_size'], collate_fn=collate_batch)
+train_batches = DataLoader(train_set, batch_size=opt['batch_size'], collate_fn=collate_batch)
 dev_set = EpisodeDataset(opt['data_dir']+'dev_episode.json', tokenizer)
-dev_batches = DataLoader(ds, batch_size=opt['batch_size'], collate_fn=collate_batch)
-opt['num_training_steps'] = len(DL_DS) * opt['num_epoch']
+dev_batches = DataLoader(dev_set, batch_size=opt['batch_size'], collate_fn=collate_batch)
+opt['num_training_steps'] = len(train_batches) * opt['num_epoch']
 opt['num_warmup_steps'] = opt['num_training_steps'] * opt['warmup_prop']
 
 eval_step = max(1, opt['num_training_steps'] // args.eval_per_epoch)
