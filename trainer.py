@@ -67,8 +67,8 @@ class BERTtrainer(Trainer):
     def __init__(self, opt):
         self.opt = opt
         self.in_dim = 768 * 2
-        with torch.cuda.device(device):
-            self.nav = nn.parameter.Parameter(torch.randn(m, in_dim)).cuda()
+        with torch.cuda.device(opt['device']):
+            self.nav = nn.parameter.Parameter(torch.randn(opt['m'], self.in_dim)).cuda()
         self.encoder = BertEM("bert-base-uncased", opt['m'], self.in_dim, opt['device'])
         self.criterion = nn.CrossEntropyLoss()
 
@@ -87,7 +87,7 @@ class BERTtrainer(Trainer):
             num_training_steps=opt['num_training_steps'])
 
         if opt['cuda']:
-            with torch.cuda.device(self.opt['device']):
+            with torch.cuda.device(opt['device']):
                 self.encoder.cuda()
                 self.criterion.cuda()
 
