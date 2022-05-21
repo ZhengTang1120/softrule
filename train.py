@@ -43,6 +43,7 @@ eval_step = max(1, opt['num_training_steps'] // args.eval_per_epoch)
 trainer = BERTtrainer(opt)
 i = 0
 curr_acc = 0
+trainer.load(opt['save_dir']+'/best_model.pt')
 for epoch in range(opt['num_epoch']):
     for b in train_batches:
         loss = trainer.update(b)
@@ -53,9 +54,9 @@ for epoch in range(opt['num_epoch']):
             for db in dev_batches:
                 score, loss = trainer.predict(db)
                 preds += np.argmax(score.squeeze(2).data.cpu().numpy(), axis=1).tolist()
-            np = [p == 5 for p in preds]
-            ng = [g == 5 for g in dev_set.get_golds()]
-            acc = sum([np[i] == ng[i] for i in range(len(np))])/len(np)
+            nrp = [p == 5 for p in preds]
+            nrg = [g == 5 for g in dev_set.get_golds()]
+            acc = sum([nrp[i] == nrg[i] for i in range(len(np))])/len(np)
             if acc > curr_acc:
                 curr_acc = acc
                 print ("current accuracy: %f"%acc)
