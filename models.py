@@ -8,7 +8,7 @@ class BertEM(nn.Module):
         super().__init__()
         self.model = BertModel.from_pretrained(model)
         with torch.cuda.device(device):
-            self.nav = Variable(torch.randn(m, in_dim)).cuda()
+            self.nav = nn.parameter.Parameter(torch.randn(m, in_dim)).cuda()
 
     def forward(self, words):
         # print (words)
