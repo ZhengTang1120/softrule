@@ -46,7 +46,6 @@ for epoch in range(opt['num_epoch']):
                 print (score)
                 print (np.argmax(score.squeeze(2).data.cpu().numpy(), axis=1).tolist())
                 preds += np.argmax(score.squeeze(2).data.cpu().numpy(), axis=1).tolist()
-            print (preds, ds.get_golds())
         i += 1
 
 
