@@ -9,9 +9,9 @@ class BertEM(nn.Module):
         self.model = BertModel.from_pretrained(model)
 
     def forward(self, words):
-        # print (words)
+        print (words)
         output = self.model(words)
-        # print (output)
+        print (output)
         h = output.last_hidden_state
         subj_mask = torch.logical_and(words.unsqueeze(2).gt(0), words.unsqueeze(2).lt(3))
         obj_mask = torch.logical_and(words.unsqueeze(2).gt(2), words.unsqueeze(2).lt(20))
