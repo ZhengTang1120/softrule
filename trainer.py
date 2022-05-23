@@ -36,6 +36,7 @@ class Trainer(object):
             with torch.cuda.device(device):
                 self.encoder.cuda()
                 self.nav.cuda()
+        print (self.nav)
             
         
 
