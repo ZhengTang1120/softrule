@@ -1,4 +1,4 @@
-from transformers import BertTokenizer
+from transformers import AutoTokenizer
 from dataloader import *
 from trainer import BERTtrainer
 import numpy as np
@@ -27,11 +27,11 @@ parser.add_argument('--device', type=int, default=0, help='gpu device to use.')
 parser.add_argument('--pooling', choices=['max', 'avg', 'sum'], default='max', help='Pooling function type. Default max.')
 parser.add_argument('--warmup_prop', type=float, default=0.3, help='Proportion of training to perform linear learning rate warmup for.')
 parser.add_argument("--eval_per_epoch", default=10, type=int, help="How many times it evaluates on dev set per epoch")
-parser.add_argument('--bert', default='all-mpnet-base-v2', type=str, help='Which bert to use.')
+parser.add_argument('--bert', default='sentence-transformers/all-mpnet-base-v2', type=str, help='Which bert to use.')
 args = parser.parse_args()
 opt = vars(args)
 
-tokenizer = BertTokenizer.from_pretrained(opt['bert'])
+tokenizer = AutoTokenizer.from_pretrained(opt['bert'])
 train_set = EpisodeDataset(opt['data_dir']+'train_episode_nota_query_only.json', tokenizer)
 train_batches = DataLoader(train_set, batch_size=opt['batch_size'], collate_fn=collate_batch)
 dev_set = EpisodeDataset(opt['data_dir']+'dev_episode.json', tokenizer)

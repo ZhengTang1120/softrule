@@ -1,12 +1,12 @@
 import torch
-from transformers import BertModel
+from transformers import AutoModel
 import torch.nn as nn
 from torch.autograd import Variable
 
 class BertEM(nn.Module):
     def __init__(self, model, m, in_dim):
         super().__init__()
-        self.model = BertModel.from_pretrained(model)
+        self.model = AutoModel.from_pretrained(model)
 
     def forward(self, words):
         output = self.model(words)
