@@ -21,7 +21,7 @@ class Trainer(object):
     def predict(self, batch):
         raise NotImplementedError
 
-    def load(self, filename, opt):
+    def load(self, filename):
         try:
             checkpoint = torch.load(filename)
         except BaseException:
@@ -29,10 +29,6 @@ class Trainer(object):
             exit()
         self.encoder.load_state_dict(checkpoint['encoder'])
         self.nav = checkpoint['nav']
-        if opt['cuda']:
-            with torch.cuda.device(opt['device']):
-                self.encoder.cuda()
-                self.nav.cuda()
             
         
 
