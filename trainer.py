@@ -84,7 +84,7 @@ class BERTtrainer(Trainer):
         self.scheduler = get_linear_schedule_with_warmup(self.optimizer, 
             num_warmup_steps=opt['num_warmup_steps'], 
             num_training_steps=opt['num_training_steps'])
-
+        print (opt['device'])
         if opt['cuda']:
             with torch.cuda.device(opt['device']):
                 self.encoder.cuda()
