@@ -39,17 +39,27 @@ class EpisodeDataset(Dataset):
                 for shot in way:
                     self.support_sents[-1][-1].append(self.parseTACRED(shot))
             self.queries.append(self.parseTACRED(ep['meta_test'][0]))
-            self.labels.append(labels[i][0].index(labels[i][1][0]) if labels[i][1][0] in labels[i][0] else len(labels[i][0])) # For now, only use one NAV
+            self.labels.append(labels[i][0].index(labels[i][1][0]) if labels[i][1][0] in labels[i][0] else len(labels[i][0]))
 
     def parseTACRED(self, instance):
         words = list()
         ss, se = instance['subj_start'], instance['subj_end']
         os, oe = instance['obj_start'], instance['obj_end']
 
-        for i, t in enumerate(instance['token']):
+        s = e = -1
+
+        for i, t in enumerate(instance['token'][s:e]):
             if i == ss:
+                if s == -1:
+                    s = len(words)
+                else:
+                    e = len(words)-1
                 words.append("[unused%d]"%(ENTITY_TOKEN_TO_ID['[SUBJ-'+instance['subj_type']+']']))
             if i == os:
+                if s == -1:
+                    s = len(words)
+                else:
+                    e = len(words)-1
                 words.append("[unused%d]"%(ENTITY_TOKEN_TO_ID['[OBJ-'+instance['obj_type']+']']))
             if i>=ss and i<=se:
                 pass
@@ -59,8 +69,10 @@ class EpisodeDataset(Dataset):
                 t = convert_token(t)
                 for j, sub_token in enumerate(self.tokenizer.tokenize(t)):
                     words.append(sub_token)
-        
-        words = ['[CLS]'] + words + ['[SEP]']
+        print (words)
+        words = words[s:e]
+        print (words)
+        words = ['<s>'] + words + ['</s>']
         tokens = self.tokenizer.convert_tokens_to_ids(words)
         # if len(tokens) > self.opt['max_length']:
         #     tokens = tokens[:self.opt['max_length']]
@@ -72,7 +84,7 @@ class EpisodeDataset(Dataset):
         notas = defaultdict(list)
         for rel in sampled_instances:
             for instance in sampled_instances[rel]:
-                tokens = self.parseTACRED(instance)
+                tokens = self.tokenizer(instance)['input_ids']
                 notas[rel].append(tokens)
             notas[rel] = torch.LongTensor(pad_list(notas[rel]))
         return notas
