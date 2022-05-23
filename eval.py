@@ -26,7 +26,7 @@ print("Loading model from {}".format(model_file))
 opt = load_config(model_file)
 opt['device'] = args.device
 trainer = BERTtrainer(opt)
-trainer.load(model_file)
+trainer.load(model_file, opt)
 
 tokenizer = BertTokenizer.from_pretrained(opt['bert'])
 
