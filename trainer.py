@@ -128,9 +128,11 @@ class BERTtrainer(Trainer):
             rels = random.sample(notas.keys(), self.opt['m'])
             for rel in rels:
                 nav = self.encoder(notas[rel])    
-                nav = torch.mean(nav, 0)
+                nav = torch.mean(nav, 1)
+                print (nav.size())
                 navs.append(nav.view(1, -1))
             navs = torch.cat(navs, 1)
+            print (navs.size())
             with torch.cuda.device(self.opt['device']):
                 navs = torch.Tensor(navs.tolist())
                 navs.requires_grad_(True)
