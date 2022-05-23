@@ -131,7 +131,7 @@ class BERTtrainer(Trainer):
                 nav = torch.mean(nav, 0)
                 navs.append(nav.view(1, -1))
             navs = torch.cat(navs, 0)
-            navs = torch.tensor(navs.cpu().tolist(), requires_grad=True, device=self.opt['device'], dtype=torch.cfloat)
+            navs = torch.tensor(navs.cpu().tolist(), requires_grad=True, device=self.opt['device'], dtype=torch.float)
             return navs
 
 
