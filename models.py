@@ -4,7 +4,7 @@ import torch.nn as nn
 from torch.autograd import Variable
 
 class BertEM(nn.Module):
-    def __init__(self, model, m, in_dim):
+    def __init__(self, model):
         super().__init__()
         self.model = AutoModel.from_pretrained(model)
 
@@ -14,18 +14,20 @@ class BertEM(nn.Module):
         # subj_mask = torch.logical_and(words.unsqueeze(2).gt(0), words.unsqueeze(2).lt(3))
         # obj_mask = torch.logical_and(words.unsqueeze(2).gt(2), words.unsqueeze(2).lt(20))
         # v = torch.cat([pool(h, subj_mask.eq(0), type='avg'), pool(h, obj_mask.eq(0), type='avg')], 1)
-        mask = torch.ones(words.unsqueeze(2).size())
-        v = pool(h, mask, type='avg')
+        v = pool(h, type='avg')
         return v
 
-def pool(h, mask, type='max'):
+def pool(h, mask=None, type='max'):
     if type == 'max':
-        h = h.masked_fill(mask, -constant.INFINITY_NUMBER)
+        if mask:
+            h = h.masked_fill(mask, -constant.INFINITY_NUMBER)
         return torch.max(h, 1)[0]
     elif type == 'avg':
-        h = h.masked_fill(mask, 0)
+        if mask:
+            h = h.masked_fill(mask, 0)
         # print ('size: ', (mask.size(1) - mask.float().sum(1)))
         return h.sum(1) / (mask.size(1) - mask.float().sum(1))
     else:
-        h = h.masked_fill(mask, 0)
+        if mask:
+            h = h.masked_fill(mask, 0)
         return h.sum(1)
