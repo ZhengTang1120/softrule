@@ -132,8 +132,9 @@ class BERTtrainer(Trainer):
                 navs.append(nav)
             navs = torch.cat(navs, 0)
             with torch.cuda.device(self.opt['device']):
-                navs = torch.Tensor(navs.tolist(), device="cuda")
+                navs = torch.Tensor(navs.tolist())
                 navs.requires_grad_(True)
-                return navs
+                navs.cuda()
+                return navsv
 
 
