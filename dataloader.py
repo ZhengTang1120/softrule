@@ -69,11 +69,10 @@ class EpisodeDataset(Dataset):
                 t = convert_token(t)
                 for j, sub_token in enumerate(self.tokenizer.tokenize(t)):
                     words.append(sub_token)
-        print (words)
         words = words[s:e]
-        print (words)
         words = ['<s>'] + words + ['</s>']
         tokens = self.tokenizer.convert_tokens_to_ids(words)
+        print (tokens)
         # if len(tokens) > self.opt['max_length']:
         #     tokens = tokens[:self.opt['max_length']]
 
@@ -85,6 +84,7 @@ class EpisodeDataset(Dataset):
         for rel in sampled_instances:
             for instance in sampled_instances[rel]:
                 tokens = self.tokenizer(instance)['input_ids']
+                print ('nota',tokens)
                 notas[rel].append(tokens)
             notas[rel] = torch.LongTensor(pad_list(notas[rel]))
         return notas
