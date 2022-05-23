@@ -67,7 +67,9 @@ class BERTtrainer(Trainer):
         config = BertConfig.from_pretrained(opt['bert'])
         self.in_dim = config.hidden_size * 2
         self.encoder = BertEM(opt['bert'], opt['m'], self.in_dim)
-        self.nav = self.generate_m_nav(notas)
+        with torch.cuda.device(self.opt['device']):
+            self.nav = torch.rand((self.opt['m'], self.in_dim), requires_grad=True, device="cuda")
+        # self.nav = self.generate_m_nav(notas)
         self.criterion = nn.CrossEntropyLoss()
 
         param_optimizer = list(self.encoder.named_parameters())
