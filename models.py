@@ -25,8 +25,9 @@ def pool(h, mask=None, type='max'):
     elif type == 'avg':
         if mask:
             h = h.masked_fill(mask, 0)
-        # print ('size: ', (mask.size(1) - mask.float().sum(1)))
-        return h.sum(1) / (mask.size(1) - mask.float().sum(1))
+            return h.sum(1) / (mask.size(1) - mask.float().sum(1))
+        else:
+            return h.sum(1) / h.size(1)
     else:
         if mask:
             h = h.masked_fill(mask, 0)
