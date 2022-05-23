@@ -67,8 +67,7 @@ class BERTtrainer(Trainer):
         config = BertConfig.from_pretrained(opt['bert'])
         self.in_dim = config.hidden_size * 2
         self.encoder = BertEM(opt['bert'], opt['m'], self.in_dim)
-        with torch.cuda.device(opt['device']):
-            self.nav = torch.rand((opt['m'], self.in_dim), requires_grad=True, device="cuda")
+        self.nav = torch.rand((opt['m'], self.in_dim), requires_grad=True, device="cuda:%d"%opt['device'])
         self.criterion = nn.CrossEntropyLoss()
 
         param_optimizer = list(self.encoder.named_parameters())
@@ -84,7 +83,6 @@ class BERTtrainer(Trainer):
         self.scheduler = get_linear_schedule_with_warmup(self.optimizer, 
             num_warmup_steps=opt['num_warmup_steps'], 
             num_training_steps=opt['num_training_steps'])
-        print (opt['device'])
         if opt['cuda']:
             with torch.cuda.device(opt['device']):
                 self.encoder.cuda()
