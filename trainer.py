@@ -135,6 +135,6 @@ class BERTtrainer(Trainer):
                 navs = torch.Tensor(navs.tolist())
                 navs.requires_grad_(True)
                 navs.cuda()
-                return navsv
+                return navs
 
 
