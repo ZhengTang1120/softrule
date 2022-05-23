@@ -31,14 +31,6 @@ class Trainer(object):
         self.nav = checkpoint['nav']
         device = self.opt['device']
         self.opt = checkpoint['config']
-        self.opt['device'] = device
-        if self.opt['cuda']:
-            with torch.cuda.device(device):
-                self.encoder.cuda()
-                self.nav.cuda()
-        print (self.nav)
-            
-        
 
     def save(self, filename):
         params = {
