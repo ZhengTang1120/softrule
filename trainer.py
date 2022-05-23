@@ -30,6 +30,7 @@ class Trainer(object):
         self.encoder.load_state_dict(checkpoint['encoder'])
         with torch.cuda.device(self.opt['device']):
             self.nav = checkpoint['nav'].cuda()
+        print (self.nav)
 
         
 
@@ -106,6 +107,7 @@ class BERTtrainer(Trainer):
         return loss_val
 
     def predict(self, batch):
+        print (self.nav)
         query, support_sents, labels, N, k, batch_size = unpack_batch(batch, self.opt['cuda'], self.opt['device'])
         self.encoder.eval()
         with torch.no_grad():
