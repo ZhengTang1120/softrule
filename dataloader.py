@@ -48,18 +48,18 @@ class EpisodeDataset(Dataset):
 
         s = e = -1
 
-        for i, t in enumerate(instance['token'][s:e]):
+        for i, t in enumerate(instance['token']):
             if i == ss:
                 if s == -1:
-                    s = len(words)
+                    s = len(words)-1
                 else:
-                    e = len(words)-1
+                    e = len(words)
                 words.append("[unused%d]"%(ENTITY_TOKEN_TO_ID['[SUBJ-'+instance['subj_type']+']']))
             if i == os:
                 if s == -1:
-                    s = len(words)
+                    s = len(words)-1
                 else:
-                    e = len(words)-1
+                    e = len(words)
                 words.append("[unused%d]"%(ENTITY_TOKEN_TO_ID['[OBJ-'+instance['obj_type']+']']))
             if i>=ss and i<=se:
                 pass
