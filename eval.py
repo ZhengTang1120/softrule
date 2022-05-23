@@ -1,6 +1,7 @@
 from transformers import BertTokenizer
 from dataloader import *
 from trainer import BERTtrainer
+import torch
 
 import argparse
 
