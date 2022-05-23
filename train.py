@@ -32,7 +32,7 @@ args = parser.parse_args()
 opt = vars(args)
 
 tokenizer = BertTokenizer.from_pretrained(opt['bert'])
-train_set = EpisodeDataset(opt['data_dir']+'train_episode_nota_query_only.json', tokenizer)
+train_set = EpisodeDataset(opt['data_dir']+'dev_episode.json', tokenizer)
 train_batches = DataLoader(train_set, batch_size=opt['batch_size'], collate_fn=collate_batch)
 dev_set = EpisodeDataset(opt['data_dir']+'dev_episode.json', tokenizer)
 dev_batches = DataLoader(dev_set, batch_size=1, collate_fn=collate_batch)
