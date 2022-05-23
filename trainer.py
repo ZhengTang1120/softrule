@@ -86,7 +86,7 @@ class BERTtrainer(Trainer):
         if opt['cuda']:
             with torch.cuda.device(opt['device']):
                 self.encoder.cuda()
-                self.nav.cuda()
+                self.nav = self.nav.to(device="cuda")
                 self.criterion.cuda()
         print (self.nav)
 
