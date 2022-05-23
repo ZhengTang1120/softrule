@@ -128,7 +128,7 @@ class BERTtrainer(Trainer):
             for rel in rels:
                 print (notas[rel].size())
                 nav = self.encoder(notas[rel])    
-                nav = torch.mean(nv, 0)
+                nav = torch.mean(nav, 0)
                 navs.append(nav)
                 print (nav.size())
             return torch.cat(notas, 0)
