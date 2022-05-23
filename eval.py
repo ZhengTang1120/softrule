@@ -21,7 +21,7 @@ opt = vars(args)
 # load opt
 model_file = args.model_dir + '/best_model.pt'
 print("Loading model from {}".format(model_file))
-opt = torch_utils.load_config(model_file)
+opt = load_config(model_file)
 opt['device'] = args.device
 trainer = BERTtrainer(opt)
 trainer.load(model_file)
