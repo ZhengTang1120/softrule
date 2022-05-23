@@ -27,7 +27,7 @@ parser.add_argument('--device', type=int, default=0, help='gpu device to use.')
 parser.add_argument('--pooling', choices=['max', 'avg', 'sum'], default='max', help='Pooling function type. Default max.')
 parser.add_argument('--warmup_prop', type=float, default=0.3, help='Proportion of training to perform linear learning rate warmup for.')
 parser.add_argument("--eval_per_epoch", default=10, type=int, help="How many times it evaluates on dev set per epoch")
-parser.add_argument('--bert', default='bert-large-uncased', type=str, help='Which bert to use.')
+parser.add_argument('--bert', default='all-mpnet-base-v', type=str, help='Which bert to use.')
 args = parser.parse_args()
 opt = vars(args)
 

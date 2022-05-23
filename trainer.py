@@ -65,7 +65,7 @@ class BERTtrainer(Trainer):
     def __init__(self, opt, notas=None):
         self.opt = opt
         config = BertConfig.from_pretrained(opt['bert'])
-        self.in_dim = config.hidden_size * 2
+        self.in_dim = config.hidden_size
         self.encoder = BertEM(opt['bert'], opt['m'], self.in_dim)
         self.nav = self.generate_m_nav(notas)
         self.criterion = nn.CrossEntropyLoss()
