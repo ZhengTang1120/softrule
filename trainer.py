@@ -123,8 +123,8 @@ class BERTtrainer(Trainer):
                 return torch.rand((opt['m'], self.in_dim), requires_grad=True, device="cuda")
         else:
             navs = []
-            assert m <= len(self.notas)
-            rels = random.sample(self.notas.keys(), m)
+            assert opt['m'] <= len(self.notas)
+            rels = random.sample(self.notas.keys(), opt['m'])
             for rel in rels:
                 print (rels[rel].size())
                 nav = self.encoder(rels[rel])    
