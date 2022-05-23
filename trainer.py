@@ -30,9 +30,6 @@ class Trainer(object):
         self.encoder.load_state_dict(checkpoint['encoder'])
         with torch.cuda.device(self.opt['device']):
             self.nav = checkpoint['nav'].cuda()
-        print (self.nav)
-
-        
 
     def save(self, filename):
         params = {
@@ -93,6 +90,9 @@ class BERTtrainer(Trainer):
     def update(self, batch):
         query, support_sents, labels, N, k, batch_size = unpack_batch(batch, self.opt['cuda'], self.opt['device'])
         self.encoder.train()
+        print (self.nav)
+        self.nav = torch.mean(self.nav, 0).unsqueeze(0)
+        print (self.nav)
         qv = self.encoder(query)
         svs = self.encoder(support_sents.view(batch_size*N*k, -1))
         svs = torch.mean(svs.view(batch_size, N, k, -1), 2)
@@ -107,7 +107,6 @@ class BERTtrainer(Trainer):
         return loss_val
 
     def predict(self, batch):
-        print (self.nav)
         query, support_sents, labels, N, k, batch_size = unpack_batch(batch, self.opt['cuda'], self.opt['device'])
         self.encoder.eval()
         with torch.no_grad():
