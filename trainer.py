@@ -80,9 +80,9 @@ class BERTtrainer(Trainer):
             {'params': self.nav, 'weight_decay': 0.0}
         ]
         self.optimizer = AdamW(optimizer_grouped_parameters, lr=opt['lr'])
-        self.scheduler = get_linear_schedule_with_warmup(self.optimizer, 
-            num_warmup_steps=opt['num_warmup_steps'], 
-            num_training_steps=opt['num_training_steps'])
+        # self.scheduler = get_linear_schedule_with_warmup(self.optimizer, 
+        #     num_warmup_steps=opt['num_warmup_steps'], 
+        #     num_training_steps=opt['num_training_steps'])
         if opt['cuda']:
             with torch.cuda.device(opt['device']):
                 self.encoder.cuda()
@@ -100,7 +100,7 @@ class BERTtrainer(Trainer):
         loss_val = loss.item()
         loss.backward()
         self.optimizer.step()
-        self.scheduler.step()
+        # self.scheduler.step()
         self.optimizer.zero_grad()
         qv = svs = query = support_sents = None
         return loss_val
