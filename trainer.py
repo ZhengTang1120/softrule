@@ -28,7 +28,9 @@ class Trainer(object):
             print("Cannot load model from {}".format(filename))
             exit()
         self.encoder.load_state_dict(checkpoint['encoder'])
-        self.nav = checkpoint['nav']
+        print (self.opt['device'])
+        with torch.cuda.device(self.opt['device']):
+            self.nav = checkpoint['nav'].cuda()
             
         
 
