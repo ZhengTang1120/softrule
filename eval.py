@@ -40,7 +40,5 @@ for db in data_batches:
 nrp = [p == 5 for p in preds]
 nrg = [g == 5 for g in data_set.get_golds()]
 acc = sum([nrp[i] == nrg[i] for i in range(len(nrp))])/len(nrp)
-if acc > curr_acc:
-    curr_acc = acc
-    print ("current accuracy: %f"%acc)
+print ("current accuracy: %f"%acc)
 
