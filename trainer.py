@@ -11,6 +11,8 @@ from models import BertEM
 from transformers import AdamW, BertConfig
 from transformers.optimization import get_linear_schedule_with_warmup
 
+import random
+
 class Trainer(object):
     def __init__(self, opt):
         raise NotImplementedError
@@ -92,6 +94,8 @@ class BERTtrainer(Trainer):
         qv = self.encoder(query)
         svs = self.encoder(support_sents.view(batch_size*N*k, -1))
         svs = torch.mean(svs.view(batch_size, N, k, -1), 2)
+        print (self.nav.size())
+        print (torch.mean(self.nav, 0).size())
         svs = torch.cat([svs, torch.mean(self.nav, 0).expand(batch_size, -1,self.in_dim)], 1)
         loss = self.criterion(torch.bmm(svs, qv.view(batch_size, -1, 1)), labels.view(batch_size, 1))
         loss_val = loss.item()
@@ -115,9 +119,15 @@ class BERTtrainer(Trainer):
             qv = svs = query = support_sents = None
             return scores, loss
 
-def generate_m_nav(m, in_dim, device):
-    with torch.cuda.device(device):
-        return torch.rand((m, in_dim), requires_grad=True, device="cuda")
+def generate_m_nav(m, in_dim, device, rand_gen=True):
+    if rand_gen:
+        with torch.cuda.device(device):
+            return torch.rand((m, in_dim), requires_grad=True, device="cuda")
+#     else:
+#         notas = []
+#         for _ in m:
+#             notas.append(init_nota())
+#         return torch.cat(notas, 0)
 
 # def init_nota():
 
