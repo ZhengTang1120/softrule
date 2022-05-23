@@ -86,7 +86,6 @@ class BERTtrainer(Trainer):
         if opt['cuda']:
             with torch.cuda.device(opt['device']):
                 self.encoder.cuda()
-                self.nav = self.nav.to(device="cuda")
                 self.criterion.cuda()
 
     def update(self, batch):
@@ -132,8 +131,7 @@ class BERTtrainer(Trainer):
                 nav = torch.mean(nav, 0)
                 navs.append(nav.view(1, -1))
             navs = torch.cat(navs, 0)
-            navs = torch.Tensor(navs.cpu().tolist())
-            navs.requires_grad_(True)
+            navs = torch.tensor(navs.cpu().tolist(), requires_grad=True, device=self.opt['device'], dtype=torch.cfloat)
             return navs
 
 
