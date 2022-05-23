@@ -130,7 +130,10 @@ class BERTtrainer(Trainer):
                 nav = self.encoder(notas[rel])    
                 nav = torch.mean(nav, 0)
                 navs.append(nav)
-            return torch.cat(navs, 0)
-
+            navs = torch.cat(navs, 0)
+            with torch.cuda.device(self.opt['device']):
+                navs = torch.Tensor(navs.tolist(), device="cuda")
+                navs.requires_grad_(True)
+                return navs
 
 
