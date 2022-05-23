@@ -89,7 +89,7 @@ class BERTtrainer(Trainer):
                 self.criterion.cuda()
 
     def update(self, batch):
-        print (self.nav.size())
+        print (self.nav)
         query, support_sents, labels, N, k, batch_size = unpack_batch(batch, self.opt['cuda'], self.opt['device'])
         self.encoder.train()
         qv = self.encoder(query)
@@ -131,11 +131,10 @@ class BERTtrainer(Trainer):
                 nav = torch.mean(nav, 0)
                 navs.append(nav.view(1, -1))
             navs = torch.cat(navs, 0)
-            print (navs.size())
             with torch.cuda.device(self.opt['device']):
                 navs = torch.Tensor(navs.tolist())
                 navs.requires_grad_(True)
                 navs.cuda()
-                return navs
+            return navs
 
 
