@@ -127,8 +127,9 @@ class BERTtrainer(Trainer):
             assert self.opt['m'] <= len(notas)
             rels = random.sample(notas.keys(), self.opt['m'])
             for rel in rels:
-                nav = self.encoder(notas[rel])    
-                nav = torch.mean(nav, 1)
+                nav = self.encoder(notas[rel]) 
+                print (nav.size())   
+                nav = torch.mean(nav, 0)
                 print (nav.size())
                 navs.append(nav.view(1, -1))
             navs = torch.cat(navs, 1)
