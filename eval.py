@@ -18,8 +18,6 @@ parser.add_argument('--device', type=int, default=0, help='gpu device to use.')
 args = parser.parse_args()
 opt = vars(args)
 
-tokenizer = BertTokenizer.from_pretrained('spanbert-large-cased')
-
 # load opt
 model_file = args.model_dir + '/best_model.pt'
 print("Loading model from {}".format(model_file))
@@ -27,6 +25,8 @@ opt = torch_utils.load_config(model_file)
 opt['device'] = args.device
 trainer = BERTtrainer(opt)
 trainer.load(model_file)
+
+tokenizer = BertTokenizer.from_pretrained(opt['bert'])
 
 data_set = EpisodeDataset(opt['data_dir']+f'{args.dataset}_episode.json', tokenizer)
 data_batches = DataLoader(data_set, batch_size=opt['batch_size'], collate_fn=collate_batch)
