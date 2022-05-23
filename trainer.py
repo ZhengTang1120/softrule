@@ -65,7 +65,7 @@ class BERTtrainer(Trainer):
         config = BertConfig.from_pretrained(opt['bert'])
         self.in_dim = config.hidden_size * 2
         self.encoder = BertEM(opt['bert'], opt['m'], self.in_dim)
-        self.nav = generate_m_nav(opt)
+        self.nav = generate_m_nav(opt['m'], self.in_dim, opt['device'])
         self.criterion = nn.CrossEntropyLoss()
 
         param_optimizer = list(self.encoder.named_parameters())
@@ -115,7 +115,10 @@ class BERTtrainer(Trainer):
             qv = svs = query = support_sents = None
             return scores, loss
 
-def generate_m_nav(opt):
-    with torch.cuda.device(opt['device']):
-        self.nav = torch.rand((opt['m'], self.in_dim), requires_grad=True, device="cuda")
+def generate_m_nav(m, in_dim, device):
+    with torch.cuda.device(device):
+        return torch.rand((m, in_dim), requires_grad=True, device="cuda")
+
+# def init_nota():
+
 
