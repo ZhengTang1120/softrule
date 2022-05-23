@@ -67,8 +67,6 @@ class BERTtrainer(Trainer):
         config = BertConfig.from_pretrained(opt['bert'])
         self.in_dim = config.hidden_size * 2
         self.encoder = BertEM(opt['bert'], opt['m'], self.in_dim)
-        # with torch.cuda.device(self.opt['device']):
-        #     self.nav = torch.rand((self.opt['m'], self.in_dim), requires_grad=True, device="cuda")
         self.nav = self.generate_m_nav(notas)
         self.criterion = nn.CrossEntropyLoss()
 
@@ -82,9 +80,9 @@ class BERTtrainer(Trainer):
             {'params': self.nav, 'weight_decay': 0.0}
         ]
         self.optimizer = AdamW(optimizer_grouped_parameters, lr=opt['lr'])
-        # self.scheduler = get_linear_schedule_with_warmup(self.optimizer, 
-        #     num_warmup_steps=opt['num_warmup_steps'], 
-        #     num_training_steps=opt['num_training_steps'])
+        self.scheduler = get_linear_schedule_with_warmup(self.optimizer, 
+            num_warmup_steps=opt['num_warmup_steps'], 
+            num_training_steps=opt['num_training_steps'])
         if opt['cuda']:
             with torch.cuda.device(opt['device']):
                 self.encoder.cuda()
@@ -92,7 +90,6 @@ class BERTtrainer(Trainer):
                 self.criterion.cuda()
 
     def update(self, batch):
-        print (self.nav)
         query, support_sents, labels, N, k, batch_size = unpack_batch(batch, self.opt['cuda'], self.opt['device'])
         self.encoder.train()
         qv = self.encoder(query)
@@ -103,7 +100,7 @@ class BERTtrainer(Trainer):
         loss_val = loss.item()
         loss.backward()
         self.optimizer.step()
-        # self.scheduler.step()
+        self.scheduler.step()
         self.optimizer.zero_grad()
         qv = svs = query = support_sents = None
         return loss_val
