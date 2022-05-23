@@ -132,7 +132,7 @@ class BERTtrainer(Trainer):
                 nav = torch.mean(nav, 0)
                 navs.append(nav.view(1, -1))
             navs = torch.cat(navs, 0)
-            navs = torch.Tensor(navs.tolist())
+            navs = torch.Tensor(navs.cpu().tolist())
             navs.requires_grad_(True)
             return navs
 
