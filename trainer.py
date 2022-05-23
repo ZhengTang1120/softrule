@@ -119,12 +119,12 @@ class BERTtrainer(Trainer):
 
     def generate_m_nav(self, notas=None):
         if notas is None:
-            with torch.cuda.device(opt['device']):
-                return torch.rand((opt['m'], self.in_dim), requires_grad=True, device="cuda")
+            with torch.cuda.device(self.opt['device']):
+                return torch.rand((self.opt['m'], self.in_dim), requires_grad=True, device="cuda")
         else:
             navs = []
-            assert opt['m'] <= len(self.notas)
-            rels = random.sample(self.notas.keys(), opt['m'])
+            assert self.opt['m'] <= len(self.notas)
+            rels = random.sample(self.notas.keys(), self.opt['m'])
             for rel in rels:
                 print (rels[rel].size())
                 nav = self.encoder(rels[rel])    
