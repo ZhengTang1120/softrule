@@ -129,7 +129,7 @@ class BERTtrainer(Trainer):
             for rel in rels:
                 nav = self.encoder(notas[rel])    
                 nav = torch.mean(nav, 0)
-                navs.append(nav)
+                navs.append(nav.view(1, -1))
             navs = torch.cat(navs, 1)
             with torch.cuda.device(self.opt['device']):
                 navs = torch.Tensor(navs.tolist())
