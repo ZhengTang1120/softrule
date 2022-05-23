@@ -88,7 +88,6 @@ class BERTtrainer(Trainer):
                 self.encoder.cuda()
                 self.nav = self.nav.to(device="cuda")
                 self.criterion.cuda()
-        print (self.nav)
 
     def update(self, batch):
         print (self.nav)
