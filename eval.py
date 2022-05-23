@@ -28,7 +28,7 @@ opt['device'] = args.device
 trainer = BERTtrainer(opt)
 trainer.load(model_file)
 
-data_set = EpisodeDataset(opt['data_dir']+f'{opt['dataset']}_episode.json', tokenizer)
+data_set = EpisodeDataset(opt['data_dir']+f'{args.dataset}_episode.json', tokenizer)
 data_batches = DataLoader(data_set, batch_size=opt['batch_size'], collate_fn=collate_batch)
 
 preds = []
