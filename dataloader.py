@@ -1,17 +1,20 @@
 import torch
 from torch.utils.data import Dataset, DataLoader
 import json
+from collections import defaultdict
 
 
 ENTITY_TOKEN_TO_ID = {'[OBJ-CAUSE_OF_DEATH]': 3, '[OBJ-CITY]': 2, '[OBJ-DATE]': 17, '[OBJ-PERSON]': 14, '[OBJ-URL]': 9, '[OBJ-NATIONALITY]': 16, '[OBJ-ORGANIZATION]': 18, '[OBJ-MISC]': 11, '[OBJ-NUMBER]': 12, '[OBJ-CRIMINAL_CHARGE]': 7, '[SUBJ-ORGANIZATION]': 0, '[SUBJ-PERSON]': 1, '[OBJ-DURATION]': 4, '[OBJ-COUNTRY]': 8, '[OBJ-LOCATION]': 15, '[OBJ-RELIGION]': 10, '[OBJ-TITLE]': 6, '[OBJ-STATE_OR_PROVINCE]': 5, '[OBJ-IDEOLOGY]': 13}
 PAD_ID = 0
 
 class EpisodeDataset(Dataset):
-    def __init__(self, filename, tokenizer):
+    def __init__(self, filename, tokenizer, nota_sample='nota.json'):
         super(EpisodeDataset).__init__()
         f = json.load(open(filename))
         self.tokenizer = tokenizer
         self.parse(f[0], f[2])
+        self.nota_sample = nota_sample
+        self.notas = self.init_notas() 
 
     def __len__(self):
         return len(self.labels)
@@ -63,6 +66,16 @@ class EpisodeDataset(Dataset):
         #     tokens = tokens[:self.opt['max_length']]
 
         return tokens
+
+    def init_notas(self):
+        sampled_instances = json.load(self.nota_sample)
+        notas = defaultdict(list)
+        for rel in sampled_instances:
+            for instance in sampled_instances[rel]:
+                tokens = self.parseTACRED(instance)
+                notas[rel].append(tokens)
+            notas[rel] = torch.LongTensor(pad_list(notas[rel]))
+        return notas
 
 def convert_token(token):
     """ Convert PTB tokens to normal tokens """

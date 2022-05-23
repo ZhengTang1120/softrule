@@ -62,12 +62,12 @@ def unpack_batch(batch, cuda=False, device=0):
 
 
 class BERTtrainer(Trainer):
-    def __init__(self, opt):
+    def __init__(self, opt, notas=None):
         self.opt = opt
         config = BertConfig.from_pretrained(opt['bert'])
         self.in_dim = config.hidden_size * 2
         self.encoder = BertEM(opt['bert'], opt['m'], self.in_dim)
-        self.nav = generate_m_nav(opt['m'], self.in_dim, opt['device'])
+        self.nav = self.generate_m_nav(notas)
         self.criterion = nn.CrossEntropyLoss()
 
         param_optimizer = list(self.encoder.named_parameters())
@@ -117,16 +117,21 @@ class BERTtrainer(Trainer):
             qv = svs = query = support_sents = None
             return scores, loss
 
-def generate_m_nav(m, in_dim, device, rand_gen=True):
-    if rand_gen:
-        with torch.cuda.device(device):
-            return torch.rand((m, in_dim), requires_grad=True, device="cuda")
-#     else:
-#         notas = []
-#         for _ in m:
-#             notas.append(init_nota())
-#         return torch.cat(notas, 0)
+    def generate_m_nav(self, notas=None):
+        if notas is None:
+            with torch.cuda.device(opt['device']):
+                return torch.rand((opt['m'], self.in_dim), requires_grad=True, device="cuda")
+        else:
+            navs = []
+            assert m <= len(self.notas)
+            rels = random.sample(self.notas.keys(), m)
+            for rel in rels:
+                print (rels[rel].size())
+                nav = self.encoder(rels[rel])    
+                nav = torch.mean(nv, 0)
+                navs.append(nav)
+                print (nav.size())
+            return torch.cat(notas, 0)
 
-# def init_nota():
 
 
