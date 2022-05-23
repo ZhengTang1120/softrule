@@ -68,7 +68,7 @@ class EpisodeDataset(Dataset):
         return tokens
 
     def init_notas(self):
-        sampled_instances = json.load(self.nota_sample)
+        sampled_instances = json.load(open(self.nota_sample))
         notas = defaultdict(list)
         for rel in sampled_instances:
             for instance in sampled_instances[rel]:
