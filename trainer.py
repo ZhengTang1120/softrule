@@ -65,8 +65,7 @@ class BERTtrainer(Trainer):
         config = BertConfig.from_pretrained(opt['bert'])
         self.in_dim = config.hidden_size * 2
         self.encoder = BertEM(opt['bert'], opt['m'], self.in_dim)
-        with torch.cuda.device(opt['device']):
-            self.nav = torch.rand((opt['m'], self.in_dim), requires_grad=True, device="cuda")
+        self.nav = generate_m_nav(opt)
         self.criterion = nn.CrossEntropyLoss()
 
         param_optimizer = list(self.encoder.named_parameters())
@@ -90,13 +89,10 @@ class BERTtrainer(Trainer):
     def update(self, batch):
         query, support_sents, labels, N, k, batch_size = unpack_batch(batch, self.opt['cuda'], self.opt['device'])
         self.encoder.train()
-        print (self.nav)
-        self.nav = torch.mean(self.nav, 0).unsqueeze(0)
-        print (self.nav)
         qv = self.encoder(query)
         svs = self.encoder(support_sents.view(batch_size*N*k, -1))
         svs = torch.mean(svs.view(batch_size, N, k, -1), 2)
-        svs = torch.cat([svs, self.nav.expand(batch_size, -1,self.in_dim)], 1)
+        svs = torch.cat([svs, torch.mean(self.nav, 0).expand(batch_size, -1,self.in_dim)], 1)
         loss = self.criterion(torch.bmm(svs, qv.view(batch_size, -1, 1)), labels.view(batch_size, 1))
         loss_val = loss.item()
         loss.backward()
@@ -118,4 +114,8 @@ class BERTtrainer(Trainer):
             loss = self.criterion(scores, labels.view(batch_size, 1)).item()
             qv = svs = query = support_sents = None
             return scores, loss
+
+def generate_m_nav(opt):
+    with torch.cuda.device(opt['device']):
+        self.nav = torch.rand((opt['m'], self.in_dim), requires_grad=True, device="cuda")
 
