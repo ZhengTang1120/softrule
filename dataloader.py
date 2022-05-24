@@ -13,8 +13,12 @@ class EpisodeDataset(Dataset):
         f = json.load(open(filename))
         self.tokenizer = tokenizer
         self.parse(f[0], f[2])
-        self.nota_sample = nota_sample
-        self.notas = self.init_notas() 
+        if nota_sample is not None:
+            self.nota_sample = nota_sample
+            self.notas = self.init_notas()
+        else:
+            self.nota_sample = None
+            self.notas = None
 
     def __len__(self):
         return len(self.labels)
