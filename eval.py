@@ -30,15 +30,29 @@ trainer.load(model_file)
 
 tokenizer = BertTokenizer.from_pretrained(opt['bert'])
 
-data_set = EpisodeDataset(opt['data_dir']+f'{args.dataset}_episode.json', tokenizer)
+data_set = EpisodeDataset(opt['data_dir']+f'{args.dataset}_episode.json', tokenizer, nota=None)
 data_batches = DataLoader(data_set, batch_size=opt['batch_size'], collate_fn=collate_batch)
 
 preds = []
 for db in data_batches:
     score, loss = trainer.predict(db)
     preds += np.argmax(score.squeeze(2).data.cpu().numpy(), axis=1).tolist()
-nrp = [p == 5 for p in preds]
-nrg = [g == 5 for g in data_set.get_golds()]
-acc = sum([nrp[i] == nrg[i] for i in range(len(nrp))])/len(nrp)
-print ("current accuracy: %f"%acc)
+
+nrp = [1 if p >= 5 else 0 for p in preds]
+nrg = [1 if g >= 5 else 0 for g in data_set.get_golds()]
+
+matched = [1 if p == nrg[i] else 0 for i, p in enumerate(nrp)]
+
+recall = sum(matched)/sum(nrg)
+precision = sum(matched)/sum(nrp)
+f1 = 2 * precision * recall / (precision + recall)
+
+with open("NRC_output.txt", 'w') as f:
+    for i, p in enumerate(nrp):
+        if p == 1:
+            f.write("no_relation\n")
+        else:
+            f.write("relation\n")
+
+print ("current accuracy: %f"%f1)
 
