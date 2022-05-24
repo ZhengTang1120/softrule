@@ -54,5 +54,5 @@ with open("NRC_output.txt", 'w') as f:
         else:
             f.write("relation\n")
 
-print ("current accuracy: %f"%f1)
+print ("current precision: %f, recall: %f, f1: %f"%(precision, recall, f1))
 
