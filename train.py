@@ -39,7 +39,7 @@ opt = vars(args)
 
 torch.manual_seed(args.seed)
 random.seed(args.seed)
-
+randsampler = RandomSampler(train_set, num_samples=6000)
 tokenizer = AutoTokenizer.from_pretrained(opt['bert'])
 train_set = EpisodeDataset(opt['data_dir']+'train_episode_downsampled.json', tokenizer)
 train_batches = DataLoader(train_set, batch_size=opt['batch_size'], collate_fn=collate_batch, sampler=randsampler)
@@ -84,7 +84,7 @@ for epoch in range(opt['num_epoch']):
                 curr_acc = f1
                 trainer.save(opt['save_dir']+'/best_model.pt')
         i += 1
-    train_batches = DataLoader(train_set, batch_size=opt['batch_size'], collate_fn=collate_batch, sampler=RandomSampler(train_set, num_samples=6000))
+    train_batches = DataLoader(train_set, batch_size=opt['batch_size'], collate_fn=collate_batch, sampler=randsampler)
 
 
 
