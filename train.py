@@ -41,7 +41,7 @@ random.seed(args.seed)
 
 tokenizer = AutoTokenizer.from_pretrained(opt['bert'])
 train_set = EpisodeDataset(opt['data_dir']+'train_episode_downsampled.json', tokenizer)
-train_batches = DataLoader(train_set, batch_size=opt['batch_size'], collate_fn=collate_batch, sampler=RandomSampler(train_set, num_samples=6000))
+train_batches = DataLoader(train_set, batch_size=opt['batch_size'], collate_fn=collate_batch, sampler=randsampler)
 dev_set = EpisodeDataset(opt['data_dir']+'dev_episode.json', tokenizer)
 dev_batches = DataLoader(dev_set, batch_size=1, collate_fn=collate_batch)
 opt['num_training_steps'] = len(train_batches) * opt['num_epoch']
@@ -53,6 +53,7 @@ i = 0
 curr_acc = 0
 for epoch in range(opt['num_epoch']):
     for b in train_batches:
+        print (b[0])
         loss = trainer.update(b)
         if (i + 1) % eval_step == 0:
             # eval on dev
