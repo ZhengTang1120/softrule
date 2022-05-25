@@ -99,7 +99,7 @@ class BERTtrainer(Trainer):
         sim_navs = torch.bmm(self.nav.unsqueeze(0).expand(batch_size, -1,self.in_dim), qv.view(batch_size, -1, 1))
         print (sims.size())
         sim_navs_best = torch.max(sim_navs, dim=1).values
-        print (sim_navs_best.sie())
+        print (sim_navs_best.size())
         sims = torch.cat([sims, sim_navs_best], dim = 1)
         print (sims.size())
         exit()
