@@ -53,7 +53,7 @@ i = 0
 curr_acc = 0
 for epoch in range(opt['num_epoch']):
     for b in train_batches:
-        print (b[0])
+        print (b)
         loss = trainer.update(b)
         if (i + 1) % eval_step == 0:
             # eval on dev
