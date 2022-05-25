@@ -6,6 +6,8 @@ import numpy as np
 import argparse
 import os
 
+import torch.utils.data.*
+
 def ensure_dir(d, verbose=True):
     if not os.path.exists(d):
         if verbose:
@@ -34,7 +36,8 @@ opt = vars(args)
 
 tokenizer = AutoTokenizer.from_pretrained(opt['bert'])
 train_set = EpisodeDataset(opt['data_dir']+'train_episode_downsampled.json', tokenizer)
-train_batches = DataLoader(train_set, batch_size=opt['batch_size'], collate_fn=collate_batch)
+train_batches = DataLoader(train_set, batch_size=opt['batch_size'], collate_fn=collate_batch, shuffle=True, sampler=RandomSampler(train_set, 6000))
+print (len(train_batches))
 dev_set = EpisodeDataset(opt['data_dir']+'dev_episode.json', tokenizer)
 dev_batches = DataLoader(dev_set, batch_size=1, collate_fn=collate_batch)
 opt['num_training_steps'] = len(train_batches) * opt['num_epoch']
