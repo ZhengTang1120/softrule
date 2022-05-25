@@ -7,6 +7,7 @@ import argparse
 import os
 
 from torch.utils.data import RandomSampler
+import torch
 
 def ensure_dir(d, verbose=True):
     if not os.path.exists(d):
@@ -30,14 +31,17 @@ parser.add_argument('--pooling', choices=['max', 'avg', 'sum'], default='max', h
 parser.add_argument('--warmup_prop', type=float, default=0.3, help='Proportion of training to perform linear learning rate warmup for.')
 parser.add_argument("--eval_per_epoch", default=10, type=int, help="How many times it evaluates on dev set per epoch")
 parser.add_argument('--bert', default='sentence-transformers/all-mpnet-base-v2', type=str, help='Which bert to use.')
+parser.add_argument('--seed', default='42', type=int, help='Random Seed')
 
 args = parser.parse_args()
 opt = vars(args)
 
+torch.manual_seed(args.seed)
+random.seed(args.seed)
+
 tokenizer = AutoTokenizer.from_pretrained(opt['bert'])
 train_set = EpisodeDataset(opt['data_dir']+'train_episode_downsampled.json', tokenizer)
-train_batches = DataLoader(train_set, batch_size=opt['batch_size'], collate_fn=collate_batch, sampler=RandomSampler(train_set, num_samples=320))
-print (len(train_batches))
+train_batches = DataLoader(train_set, batch_size=opt['batch_size'], collate_fn=collate_batch, sampler=RandomSampler(train_set, num_samples=6000))
 dev_set = EpisodeDataset(opt['data_dir']+'dev_episode.json', tokenizer)
 dev_batches = DataLoader(dev_set, batch_size=1, collate_fn=collate_batch)
 opt['num_training_steps'] = len(train_batches) * opt['num_epoch']
@@ -78,6 +82,8 @@ for epoch in range(opt['num_epoch']):
                 curr_acc = f1
                 trainer.save(opt['save_dir']+'/best_model.pt')
         i += 1
+    train_batches = DataLoader(train_set, batch_size=opt['batch_size'], collate_fn=collate_batch, sampler=RandomSampler(train_set, num_samples=6000))
+
 
 
 
