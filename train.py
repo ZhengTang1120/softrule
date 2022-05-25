@@ -28,11 +28,12 @@ parser.add_argument('--pooling', choices=['max', 'avg', 'sum'], default='max', h
 parser.add_argument('--warmup_prop', type=float, default=0.3, help='Proportion of training to perform linear learning rate warmup for.')
 parser.add_argument("--eval_per_epoch", default=10, type=int, help="How many times it evaluates on dev set per epoch")
 parser.add_argument('--bert', default='sentence-transformers/all-mpnet-base-v2', type=str, help='Which bert to use.')
+
 args = parser.parse_args()
 opt = vars(args)
 
 tokenizer = AutoTokenizer.from_pretrained(opt['bert'])
-train_set = EpisodeDataset(opt['data_dir']+'train_episode.json', tokenizer)
+train_set = EpisodeDataset(opt['data_dir']+'train_episode_downsampled.json', tokenizer)
 train_batches = DataLoader(train_set, batch_size=opt['batch_size'], collate_fn=collate_batch)
 dev_set = EpisodeDataset(opt['data_dir']+'dev_episode.json', tokenizer)
 dev_batches = DataLoader(dev_set, batch_size=1, collate_fn=collate_batch)
