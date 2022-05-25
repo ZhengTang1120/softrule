@@ -38,10 +38,10 @@ for db in data_batches:
     score, loss = trainer.predict(db)
     preds += np.argmax(score.squeeze(2).data.cpu().numpy(), axis=1).tolist()
 
-nrp = [1 if p >= 5 else 0 for p in preds]
-nrg = [1 if g >= 5 else 0 for g in data_set.get_golds()]
+nrp = [0 if p >= 5 else 1 for p in preds]
+nrg = [0 if g >= 5 else 1 for g in data_set.get_golds()]
 
-matched = [1 if p == nrg[i] else 0 for i, p in enumerate(nrp)]
+matched = [1 if p == nrg[i] and p == 1 else 0 for i, p in enumerate(nrp)]
 
 recall = sum(matched)/sum(nrg)
 precision = sum(matched)/sum(nrp)
