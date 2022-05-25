@@ -51,7 +51,7 @@ f1 = 2 * precision * recall / (precision + recall)
 
 with open("NRC_output.txt", 'w') as f:
     for i, p in enumerate(nrp):
-        if p == 1:
+        if p == 0:
             f.write("no_relation\n")
         else:
             f.write("relation\n")

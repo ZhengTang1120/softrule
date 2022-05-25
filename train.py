@@ -32,7 +32,7 @@ args = parser.parse_args()
 opt = vars(args)
 
 tokenizer = AutoTokenizer.from_pretrained(opt['bert'])
-train_set = EpisodeDataset(opt['data_dir']+'train_episode_nota_query_only.json', tokenizer)
+train_set = EpisodeDataset(opt['data_dir']+'train_episode.json', tokenizer)
 train_batches = DataLoader(train_set, batch_size=opt['batch_size'], collate_fn=collate_batch)
 dev_set = EpisodeDataset(opt['data_dir']+'dev_episode.json', tokenizer)
 dev_batches = DataLoader(dev_set, batch_size=1, collate_fn=collate_batch)
@@ -53,12 +53,17 @@ for epoch in range(opt['num_epoch']):
             for db in dev_batches:
                 score, loss = trainer.predict(db)
                 preds += np.argmax(score.squeeze(2).data.cpu().numpy(), axis=1).tolist()
-            nrp = [p >= 5 for p in preds]
-            nrg = [g >= 5 for g in dev_set.get_golds()]
-            acc = sum([nrp[i] == nrg[i] for i in range(len(nrp))])/len(nrp)
-            print ("current accuracy: %f, current best: %f"%(acc, curr_acc))
-            if acc > curr_acc:
-                curr_acc = acc
+            nrp = [0 if p >= 5 else 1 for p in preds]
+            nrg = [0 if g >= 5 else 1 for g in data_set.get_golds()]
+
+            matched = [1 if p == nrg[i] and p == 1 else 0 for i, p in enumerate(nrp)]
+
+            recall = sum(matched)/sum(nrg)
+            precision = sum(matched)/sum(nrp)
+            f1 = 2 * precision * recall / (precision + recall)
+            print ("current precision: %f, recall: %f, f1: %f"%(precision, recall, f1))
+            if f1 > curr_acc:
+                curr_acc = f1
                 trainer.save(opt['save_dir']+'/best_model.pt')
         i += 1
 
