@@ -54,8 +54,9 @@ trainer = BERTtrainer(opt, train_set.notas)
 i = 0
 curr_acc = 0
 for epoch in range(opt['num_epoch']):
-    print (train_batches[0])
-    for b in train_batches:
+    for ik, b in enumerate(train_batches):
+        if ik == 0:
+            print (b)
         loss = trainer.update(b)
         if (i + 1) % eval_step == 0:
             # eval on dev
