@@ -8,6 +8,7 @@ import os
 
 from torch.utils.data import RandomSampler
 import torch
+import random
 
 def ensure_dir(d, verbose=True):
     if not os.path.exists(d):
