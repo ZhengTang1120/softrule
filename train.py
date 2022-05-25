@@ -32,6 +32,7 @@ parser.add_argument('--pooling', choices=['max', 'avg', 'sum'], default='max', h
 parser.add_argument('--warmup_prop', type=float, default=0.3, help='Proportion of training to perform linear learning rate warmup for.')
 parser.add_argument("--eval_per_epoch", default=10, type=int, help="How many times it evaluates on dev set per epoch")
 parser.add_argument('--bert', default='sentence-transformers/all-mpnet-base-v2', type=str, help='Which bert to use.')
+parser.add_argument('--train', default='train_episode.json', type=str, help='Which training set to use.')
 parser.add_argument('--seed', default='42', type=int, help='Random Seed')
 
 args = parser.parse_args()
@@ -41,7 +42,7 @@ torch.manual_seed(args.seed)
 random.seed(args.seed)
 
 tokenizer = AutoTokenizer.from_pretrained(opt['bert'])
-train_set = EpisodeDataset(opt['data_dir']+'train_episode.json', tokenizer)
+train_set = EpisodeDataset(opt['data_dir']+opt['train'], tokenizer)
 randsampler = RandomSampler(train_set, num_samples=6000)
 train_batches_size = 6000 // opt['batch_size']
 dev_set = EpisodeDataset(opt['data_dir']+'dev_episode.json', tokenizer)
