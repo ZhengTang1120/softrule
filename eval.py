@@ -43,6 +43,8 @@ nrg = [0 if g >= 5 else 1 for g in data_set.get_golds()]
 
 matched = [1 if p == nrg[i] and p == 1 else 0 for i, p in enumerate(nrp)]
 
+print (sum(nrp), sum(nrg))
+
 recall = sum(matched)/sum(nrg)
 precision = sum(matched)/sum(nrp)
 f1 = 2 * precision * recall / (precision + recall)
