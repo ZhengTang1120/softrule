@@ -54,7 +54,7 @@ for epoch in range(opt['num_epoch']):
                 score, loss = trainer.predict(db)
                 preds += np.argmax(score.squeeze(2).data.cpu().numpy(), axis=1).tolist()
             nrp = [0 if p >= 5 else 1 for p in preds]
-            nrg = [0 if g >= 5 else 1 for g in dev_batches.get_golds()]
+            nrg = [0 if g >= 5 else 1 for g in dev_set.get_golds()]
 
             matched = [1 if p == nrg[i] and p == 1 else 0 for i, p in enumerate(nrp)]
 
