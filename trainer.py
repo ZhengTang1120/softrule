@@ -97,11 +97,8 @@ class BERTtrainer(Trainer):
         # svs = torch.cat([svs, torch.mean(self.nav, 0).unsqueeze(0).expand(batch_size, -1,self.in_dim)], 1)
         sims = torch.bmm(svs, qv.view(batch_size, -1, 1))
         sim_navs = torch.bmm(self.nav.unsqueeze(0).expand(batch_size, -1,self.in_dim), qv.view(batch_size, -1, 1))
-        print (sims.size())
         sim_navs_best = torch.max(sim_navs, dim=1).values
-        print (sim_navs_best.size())
-        sims = torch.cat([sims, sim_navs_best], dim = 1)
-        print (sims.size())
+        sims = torch.cat([sims, sim_navs_best.unsqueeze(2)], dim = 1)
         exit()
         loss = self.criterion(sims, labels.view(batch_size, 1))
         loss_val = loss.item()
