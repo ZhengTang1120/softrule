@@ -36,7 +36,7 @@ opt = vars(args)
 
 tokenizer = AutoTokenizer.from_pretrained(opt['bert'])
 train_set = EpisodeDataset(opt['data_dir']+'train_episode_downsampled.json', tokenizer)
-train_batches = DataLoader(train_set, batch_size=opt['batch_size'], collate_fn=collate_batch, shuffle=True, sampler=RandomSampler(train_set, num_samples=320))
+train_batches = DataLoader(train_set, batch_size=opt['batch_size'], collate_fn=collate_batch, sampler=RandomSampler(train_set, num_samples=320))
 print (len(train_batches))
 dev_set = EpisodeDataset(opt['data_dir']+'dev_episode.json', tokenizer)
 dev_batches = DataLoader(dev_set, batch_size=1, collate_fn=collate_batch)
