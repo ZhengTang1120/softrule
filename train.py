@@ -81,10 +81,11 @@ for epoch in range(opt['num_epoch']):
                 f1 = 2 * precision * recall / (precision + recall)
             except ZeroDivisionError:
                 f1 = 0
-            print ("current precision: %f, recall: %f, f1: %f"%(precision, recall, f1))
             if f1 > curr_acc:
                 curr_acc = f1
                 trainer.save(opt['save_dir']+'/best_model.pt')
+            print ("precision: %f, recall: %f, f1: %f, "%(precision, recall, f1))
+            print ("current best f1: %f, "%(curr_acc))
         i += 1
 
 
