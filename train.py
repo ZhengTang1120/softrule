@@ -43,20 +43,18 @@ random.seed(args.seed)
 tokenizer = AutoTokenizer.from_pretrained(opt['bert'])
 train_set = EpisodeDataset(opt['data_dir']+'train_episode.json', tokenizer)
 randsampler = RandomSampler(train_set, num_samples=6000)
-train_batches = DataLoader(train_set, batch_size=opt['batch_size'], collate_fn=collate_batch, sampler=randsampler)
-print (next(iter(train_batches)))
-train_batches = DataLoader(train_set, batch_size=opt['batch_size'], collate_fn=collate_batch, sampler=randsampler)
-print (next(iter(train_batches)))
+train_batches_size = 6000 // opt['batch_size']
 dev_set = EpisodeDataset(opt['data_dir']+'dev_episode.json', tokenizer)
 dev_batches = DataLoader(dev_set, batch_size=1, collate_fn=collate_batch)
-opt['num_training_steps'] = len(train_batches) * opt['num_epoch']
+opt['num_training_steps'] = train_batches_size * opt['num_epoch']
 opt['num_warmup_steps'] = opt['num_training_steps'] * opt['warmup_prop']
 ensure_dir(opt['save_dir'], verbose=True)
-eval_step = max(1, len(train_batches) // args.eval_per_epoch)
+eval_step = max(1, train_batches_size // args.eval_per_epoch)
 trainer = BERTtrainer(opt, train_set.notas)
 i = 0
 curr_acc = 0
 for epoch in range(opt['num_epoch']):
+    train_batches = DataLoader(train_set, batch_size=opt['batch_size'], collate_fn=collate_batch, sampler=randsampler)
     for b in train_batches:
         loss = trainer.update(b)
         if (i + 1) % eval_step == 0:
@@ -87,8 +85,6 @@ for epoch in range(opt['num_epoch']):
                 curr_acc = f1
                 trainer.save(opt['save_dir']+'/best_model.pt')
         i += 1
-    train_batches = DataLoader(train_set, batch_size=opt['batch_size'], collate_fn=collate_batch, sampler=randsampler)
-
 
 
 
