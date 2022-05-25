@@ -39,9 +39,10 @@ opt = vars(args)
 
 torch.manual_seed(args.seed)
 random.seed(args.seed)
-randsampler = RandomSampler(train_set, num_samples=6000)
+
 tokenizer = AutoTokenizer.from_pretrained(opt['bert'])
 train_set = EpisodeDataset(opt['data_dir']+'train_episode.json', tokenizer)
+randsampler = RandomSampler(train_set, num_samples=6000)
 train_batches = DataLoader(train_set, batch_size=opt['batch_size'], collate_fn=collate_batch, sampler=randsampler)
 dev_set = EpisodeDataset(opt['data_dir']+'dev_episode.json', tokenizer)
 dev_batches = DataLoader(dev_set, batch_size=1, collate_fn=collate_batch)
