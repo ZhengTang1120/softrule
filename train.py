@@ -6,7 +6,7 @@ import numpy as np
 import argparse
 import os
 
-import torch.utils.data.*
+from torch.utils.data import RandomSampler
 
 def ensure_dir(d, verbose=True):
     if not os.path.exists(d):
