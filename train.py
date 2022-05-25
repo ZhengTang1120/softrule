@@ -57,10 +57,18 @@ for epoch in range(opt['num_epoch']):
             nrg = [0 if g >= 5 else 1 for g in dev_set.get_golds()]
 
             matched = [1 if p == nrg[i] and p == 1 else 0 for i, p in enumerate(nrp)]
-
-            recall = sum(matched)/sum(nrg)
-            precision = sum(matched)/sum(nrp)
-            f1 = 2 * precision * recall / (precision + recall)
+            try:
+                recall = sum(matched)/sum(nrg)
+            except ZeroDivisionError:
+                recall = 0
+            try:
+                precision = sum(matched)/sum(nrp)
+            except ZeroDivisionError:
+                precision = 0
+            try:
+                f1 = 2 * precision * recall / (precision + recall)
+            except ZeroDivisionError:
+                f1 = 0
             print ("current precision: %f, recall: %f, f1: %f"%(precision, recall, f1))
             if f1 > curr_acc:
                 curr_acc = f1
