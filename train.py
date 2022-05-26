@@ -59,9 +59,9 @@ for epoch in range(opt['num_epoch']):
     for b in train_batches:
         loss = trainer.update(b)
         # print (loss)
-    for db in dev_batches:
-        print ('dev')
-        loss = trainer.update(db)
+    # for db in dev_batches:
+    #     print ('dev')
+    #     loss = trainer.update(db)
         # if (i + 1) % eval_step == 0:
         #     # eval on dev
         #     print("Evaluating on dev set...")
