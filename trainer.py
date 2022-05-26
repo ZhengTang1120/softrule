@@ -107,6 +107,7 @@ class BERTtrainer(Trainer):
         for i, x in enumerate(torch.sum(obj_mask, 1)):
             if x[0].item() == 0:
                 print ("supports obj missing", query[i])
+        return 0
         # self.encoder.train()
         # qv = self.encoder(query)
         # svs = self.encoder(support_sents.view(batch_size*N*k, -1))
