@@ -41,7 +41,7 @@ opt = vars(args)
 torch.manual_seed(args.seed)
 random.seed(args.seed)
 
-tokenizer = AutoTokenizer.from_pretrained(opt['bert'])
+tokenizer = BertTokenizer.from_pretrained(opt['bert'])
 train_set = EpisodeDataset(opt['data_dir']+opt['train'], tokenizer)
 randsampler = RandomSampler(train_set, num_samples=6000)
 train_batches_size = 6000 // opt['batch_size']
