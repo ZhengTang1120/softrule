@@ -50,20 +50,10 @@ class EpisodeDataset(Dataset):
         ss, se = instance['subj_start'], instance['subj_end']
         os, oe = instance['obj_start'], instance['obj_end']
 
-        s = e = -1
-
         for i, t in enumerate(instance['token']):
             if i == ss:
-                if s == -1:
-                    s = len(words)
-                else:
-                    e = len(words)+1
                 words.append("[unused%d]"%(ENTITY_TOKEN_TO_ID['[SUBJ-'+instance['subj_type']+']']))
             if i == os:
-                if s == -1:
-                    s = len(words)
-                else:
-                    e = len(words)+1
                 words.append("[unused%d]"%(ENTITY_TOKEN_TO_ID['[OBJ-'+instance['obj_type']+']']))
             if i>=ss and i<=se:
                 pass
@@ -73,9 +63,12 @@ class EpisodeDataset(Dataset):
                 t = convert_token(t)
                 for j, sub_token in enumerate(self.tokenizer.tokenize(t)):
                     words.append(sub_token)
-        # words = words[s:e]
+        
         words = ['[CLS]'] + words + ['[SEP]']
         tokens = self.tokenizer.convert_tokens_to_ids(words)
+        # if len(tokens) > self.opt['max_length']:
+        #     tokens = tokens[:self.opt['max_length']]
+
         return tokens
 
     def init_notas(self):
