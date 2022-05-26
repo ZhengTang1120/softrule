@@ -90,23 +90,40 @@ class BERTtrainer(Trainer):
 
     def update(self, batch):
         query, support_sents, labels, N, k, batch_size = unpack_batch(batch, self.opt['cuda'], self.opt['device'])
-        self.encoder.train()
-        qv = self.encoder(query)
-        svs = self.encoder(support_sents.view(batch_size*N*k, -1))
-        svs = torch.mean(svs.view(batch_size, N, k, -1), 2)
-        # svs = torch.cat([svs, torch.mean(self.nav, 0).unsqueeze(0).expand(batch_size, -1,self.in_dim)], 1)
-        sims = torch.bmm(svs, qv.view(batch_size, -1, 1))
-        sim_navs = torch.bmm(self.nav.unsqueeze(0).expand(batch_size, -1,self.in_dim), qv.view(batch_size, -1, 1))
-        sim_navs_best = torch.max(sim_navs, dim=1).values
-        sims = torch.cat([sims, sim_navs_best.unsqueeze(2)], dim = 1)
-        loss = self.criterion(sims, labels.view(batch_size, 1))
-        loss_val = loss.item()
-        loss.backward()
-        self.optimizer.step()
-        self.scheduler.step()
-        self.optimizer.zero_grad()
-        qv = svs = query = support_sents = None
-        return loss_val
+        subj_mask = torch.logical_and(query.unsqueeze(2).gt(0), query.unsqueeze(2).lt(3))
+        obj_mask = torch.logical_and(query.unsqueeze(2).gt(2), query.unsqueeze(2).lt(20))
+        for i, x in enumerate(torch.sum(subj_mask, 1)):
+            if x[0].item() == 0:
+                print ("query subj missing", query[i])
+        for i, x in enumerate(torch.sum(obj_mask, 1)):
+            if x[0].item() == 0:
+                print ("query obj missing", query[i])
+        query = support_sents.view(batch_size*N*k, -1)
+        subj_mask = torch.logical_and(query.unsqueeze(2).gt(0), query.unsqueeze(2).lt(3))
+        obj_mask = torch.logical_and(query.unsqueeze(2).gt(2), query.unsqueeze(2).lt(20))
+        for i, x in enumerate(torch.sum(subj_mask, 1)):
+            if x[0].item() == 0:
+                print ("supports subj missing", query[i])
+        for i, x in enumerate(torch.sum(obj_mask, 1)):
+            if x[0].item() == 0:
+                print ("supports obj missing", query[i])
+        # self.encoder.train()
+        # qv = self.encoder(query)
+        # svs = self.encoder(support_sents.view(batch_size*N*k, -1))
+        # svs = torch.mean(svs.view(batch_size, N, k, -1), 2)
+        # # svs = torch.cat([svs, torch.mean(self.nav, 0).unsqueeze(0).expand(batch_size, -1,self.in_dim)], 1)
+        # sims = torch.bmm(svs, qv.view(batch_size, -1, 1))
+        # sim_navs = torch.bmm(self.nav.unsqueeze(0).expand(batch_size, -1,self.in_dim), qv.view(batch_size, -1, 1))
+        # sim_navs_best = torch.max(sim_navs, dim=1).values
+        # sims = torch.cat([sims, sim_navs_best.unsqueeze(2)], dim = 1)
+        # loss = self.criterion(sims, labels.view(batch_size, 1))
+        # loss_val = loss.item()
+        # loss.backward()
+        # self.optimizer.step()
+        # self.scheduler.step()
+        # self.optimizer.zero_grad()
+        # qv = svs = query = support_sents = None
+        # return loss_val
 
     def predict(self, batch):
         query, support_sents, labels, N, k, batch_size = unpack_batch(batch, self.opt['cuda'], self.opt['device'])
