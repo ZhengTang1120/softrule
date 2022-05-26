@@ -73,7 +73,7 @@ class EpisodeDataset(Dataset):
         notas = defaultdict(list)
         for rel in sampled_instances:
             for instance in sampled_instances[rel]:
-                tokens = self.tokenizer(instance)['input_ids']
+                tokens = self.parseTACRED(instance)
                 notas[rel].append(tokens)
             notas[rel] = torch.LongTensor(pad_list(notas[rel]))
         return notas
