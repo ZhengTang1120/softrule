@@ -23,7 +23,7 @@ def pool(h, mask=None, type='max'):
             h = h.masked_fill(mask, -constant.INFINITY_NUMBER)
         return torch.max(h, 1)[0]
     elif type == 'avg':
-        if mask:
+        if mask is not None:
             h = h.masked_fill(mask, 0)
             return h.sum(1) / (mask.size(1) - mask.float().sum(1))
         else:
