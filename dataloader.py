@@ -74,7 +74,7 @@ class EpisodeDataset(Dataset):
                 for j, sub_token in enumerate(self.tokenizer.tokenize(t)):
                     words.append(sub_token)
         # words = words[s:e]
-        words = ['<s>'] + words + ['</s>']
+        words = ['[CLS]'] + words + ['[SEP]']
         tokens = self.tokenizer.convert_tokens_to_ids(words)
         return tokens
 
