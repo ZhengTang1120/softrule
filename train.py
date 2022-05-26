@@ -1,4 +1,4 @@
-from transformers import AutoTokenizer
+from transformers import BertTokenizer
 from dataloader import *
 from trainer import BERTtrainer
 import numpy as np
