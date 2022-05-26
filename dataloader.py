@@ -58,13 +58,13 @@ class EpisodeDataset(Dataset):
                     s = len(words)
                 else:
                     e = len(words)+1
-                words.append(instance['subj_type'].lower())
+                words.append("[unused%d]"%(ENTITY_TOKEN_TO_ID['[SUBJ-'+instance['subj_type']+']']))
             if i == os:
                 if s == -1:
                     s = len(words)
                 else:
                     e = len(words)+1
-                words.append(instance['obj_type'].lower())
+                words.append("[unused%d]"%(ENTITY_TOKEN_TO_ID['[OBJ-'+instance['obj_type']+']']))
             if i>=ss and i<=se:
                 pass
             elif i>=os and i<=oe:
