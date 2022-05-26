@@ -58,35 +58,39 @@ for epoch in range(opt['num_epoch']):
     train_batches = DataLoader(train_set, batch_size=opt['batch_size'], collate_fn=collate_batch, sampler=randsampler)
     for b in train_batches:
         loss = trainer.update(b)
-        if (i + 1) % eval_step == 0:
-            # eval on dev
-            print("Evaluating on dev set...")
-            preds = []
-            for db in dev_batches:
-                score, loss = trainer.predict(db)
-                preds += np.argmax(score.squeeze(2).data.cpu().numpy(), axis=1).tolist()
-            nrp = [0 if p >= 5 else 1 for p in preds]
-            nrg = [0 if g >= 5 else 1 for g in dev_set.get_golds()]
+        # print (loss)
+    for db in dev_batches:
+        print ('dev')
+        loss = trainer.update(db)
+        # if (i + 1) % eval_step == 0:
+        #     # eval on dev
+        #     print("Evaluating on dev set...")
+        #     preds = []
+        #     for db in dev_batches:
+        #         score, loss = trainer.predict(db)
+        #         preds += np.argmax(score.squeeze(2).data.cpu().numpy(), axis=1).tolist()
+        #     nrp = [0 if p >= 5 else 1 for p in preds]
+        #     nrg = [0 if g >= 5 else 1 for g in dev_set.get_golds()]
 
-            matched = [1 if p == nrg[i] and p == 1 else 0 for i, p in enumerate(nrp)]
-            try:
-                recall = sum(matched)/sum(nrg)
-            except ZeroDivisionError:
-                recall = 0
-            try:
-                precision = sum(matched)/sum(nrp)
-            except ZeroDivisionError:
-                precision = 0
-            try:
-                f1 = 2 * precision * recall / (precision + recall)
-            except ZeroDivisionError:
-                f1 = 0
-            if f1 > curr_acc:
-                curr_acc = f1
-                trainer.save(opt['save_dir']+'/best_model.pt')
-            print ("precision: %f, recall: %f, f1: %f, loss: %f"%(precision, recall, f1, loss))
-            print ("current best f1: %f, "%(curr_acc))
-        i += 1
+        #     matched = [1 if p == nrg[i] and p == 1 else 0 for i, p in enumerate(nrp)]
+        #     try:
+        #         recall = sum(matched)/sum(nrg)
+        #     except ZeroDivisionError:
+        #         recall = 0
+        #     try:
+        #         precision = sum(matched)/sum(nrp)
+        #     except ZeroDivisionError:
+        #         precision = 0
+        #     try:
+        #         f1 = 2 * precision * recall / (precision + recall)
+        #     except ZeroDivisionError:
+        #         f1 = 0
+        #     if f1 > curr_acc:
+        #         curr_acc = f1
+        #         trainer.save(opt['save_dir']+'/best_model.pt')
+        #     print ("precision: %f, recall: %f, f1: %f, loss: %f"%(precision, recall, f1, loss))
+        #     print ("current best f1: %f, "%(curr_acc))
+        # i += 1
 
 
 
