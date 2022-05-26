@@ -84,7 +84,7 @@ for epoch in range(opt['num_epoch']):
             if f1 > curr_acc:
                 curr_acc = f1
                 trainer.save(opt['save_dir']+'/best_model.pt')
-            print ("precision: %f, recall: %f, f1: %f, "%(precision, recall, f1))
+            print ("precision: %f, recall: %f, f1: %f, loss: %f"%(precision, recall, f1, loss))
             print ("current best f1: %f, "%(curr_acc))
         i += 1
 
