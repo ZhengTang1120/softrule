@@ -119,7 +119,7 @@ class BERTtrainer(Trainer):
             scores = torch.bmm(svs, qv.view(batch_size, -1, 1))
             loss = self.criterion(scores, labels.view(batch_size, 1)).item()
             qv = svs = query = support_sents = None
-            return scores, loss
+            return scores, loss, labels
 
     def generate_m_nav(self, notas=None):
         if notas is None:

@@ -64,11 +64,14 @@ for epoch in range(opt['num_epoch']):
             # eval on dev
             print("Evaluating on dev set...")
             preds = []
+            golds = []
             for db in dev_batches:
-                score, loss = trainer.predict(db)
+                score, loss, labels = trainer.predict(db)
                 preds += np.argmax(score.squeeze(2).data.cpu().numpy(), axis=1).tolist()
+                print (labels.cpu().tolist())
+                golds += labels.cpu().tolist()
             nrp = [0 if p >= 5 else 1 for p in preds]
-            nrg = [0 if g >= 5 else 1 for g in dev_set.get_golds()]
+            nrg = [0 if g >= 5 else 1 for g in golds]
 
             matched = [1 if p == nrg[i] and p == 1 else 0 for i, p in enumerate(nrp)]
             try:
