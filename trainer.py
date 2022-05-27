@@ -94,11 +94,11 @@ class BERTtrainer(Trainer):
         qv = self.encoder(query)
         svs = self.encoder(support_sents.view(batch_size*N*k, -1))
         svs = torch.mean(svs.view(batch_size, N, k, -1), 2)
-        # svs = torch.cat([svs, torch.mean(self.nav, 0).unsqueeze(0).expand(batch_size, -1,self.in_dim)], 1)
+        svs = torch.cat([svs, torch.mean(self.nav, 0).unsqueeze(0).expand(batch_size, -1,self.in_dim)], 1)
         sims = torch.bmm(svs, qv.view(batch_size, -1, 1))
-        sim_navs = torch.bmm(self.nav.unsqueeze(0).expand(batch_size, -1,self.in_dim), qv.view(batch_size, -1, 1))
-        sim_navs_best = torch.max(sim_navs, dim=1).values
-        sims = torch.cat([sims, sim_navs_best.unsqueeze(2)], dim = 1)
+        # sim_navs = torch.bmm(self.nav.unsqueeze(0).expand(batch_size, -1,self.in_dim), qv.view(batch_size, -1, 1))
+        # sim_navs_best = torch.max(sim_navs, dim=1).values
+        # sims = torch.cat([sims, sim_navs_best.unsqueeze(2)], dim = 1)
         loss = self.criterion(sims, labels.view(batch_size, 1))
         loss_val = loss.item()
         loss.backward()
