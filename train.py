@@ -58,8 +58,6 @@ for epoch in range(opt['num_epoch']):
     train_batches = DataLoader(train_set, batch_size=opt['batch_size'], collate_fn=collate_batch, sampler=randsampler)
     for b in train_batches:
         loss = trainer.update(b)
-    for db in dev_batches:
-        loss = trainer.update(db)
         if (i + 1) % eval_step == 0:
             # eval on dev
             print("Evaluating on dev set...")
