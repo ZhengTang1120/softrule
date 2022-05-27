@@ -68,7 +68,6 @@ for epoch in range(opt['num_epoch']):
             for db in dev_batches:
                 score, loss, labels = trainer.predict(db)
                 preds += np.argmax(score.squeeze(2).data.cpu().numpy(), axis=1).tolist()
-                print (labels.cpu().tolist())
                 golds += labels.cpu().tolist()
             nrp = [0 if p >= 5 else 1 for p in preds]
             nrg = [0 if g >= 5 else 1 for g in golds]
