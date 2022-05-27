@@ -34,12 +34,14 @@ data_set = EpisodeDataset(opt['data_dir']+f'{args.dataset}_episode.json', tokeni
 data_batches = DataLoader(data_set, batch_size=opt['batch_size'], collate_fn=collate_batch)
 
 preds = []
+golds = []
 for db in data_batches:
-    score, loss = trainer.predict(db)
+    score, loss, labels = trainer.predict(db)
     preds += np.argmax(score.squeeze(2).data.cpu().numpy(), axis=1).tolist()
+    golds += labels.cpu().tolist()
 
 nrp = [0 if p >= 5 else 1 for p in preds]
-nrg = [0 if g >= 5 else 1 for g in data_set.get_golds()]
+nrg = [0 if g >= 5 else 1 for g in golds]
 
 matched = [1 if p == nrg[i] and p == 1 else 0 for i, p in enumerate(nrp)]
 
