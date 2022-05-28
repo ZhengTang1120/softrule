@@ -19,7 +19,7 @@ def ensure_dir(d, verbose=True):
 parser = argparse.ArgumentParser()
 parser.add_argument('--data_dir', type=str, default='./')
 parser.set_defaults(lower=False)
-parser.add_argument('--m', type=int, default=1, help='MNAV.')
+parser.add_argument('--m', type=int, default=20, help='MNAV.')
 parser.add_argument('--lr', type=float, default=1.0, help='Applies to sgd and adagrad.')
 parser.add_argument('--num_epoch', type=int, default=10, help='Number of total training epochs.')
 parser.add_argument('--batch_size', type=int, default=50, help='Training batch size.')
