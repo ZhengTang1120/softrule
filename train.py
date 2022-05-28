@@ -46,8 +46,8 @@ train_set = EpisodeDataset(opt['data_dir']+opt['train'], tokenizer)
 randsampler = RandomSampler(train_set, num_samples=6000)
 devsampler = RandomSampler(train_set, num_samples=600)
 train_batches_size = 6000 // opt['batch_size']
-# dev_set = EpisodeDataset(opt['data_dir']+'dev_episode.json', tokenizer)
-# dev_batches = DataLoader(dev_set, batch_size=1, collate_fn=collate_batch)
+dev_set = EpisodeDataset(opt['data_dir']+'dev_episode.json', tokenizer)
+dev_batches = DataLoader(dev_set, batch_size=1, collate_fn=collate_batch)
 opt['num_training_steps'] = train_batches_size * opt['num_epoch']
 opt['num_warmup_steps'] = opt['num_training_steps'] * opt['warmup_prop']
 ensure_dir(opt['save_dir'], verbose=True)
@@ -62,7 +62,6 @@ for epoch in range(opt['num_epoch']):
         if (i + 1) % eval_step == 0:
             # eval on dev
             print("Evaluating on dev set...")
-            dev_batches = DataLoader(train_set, batch_size=1, collate_fn=collate_batch, sampler=devsampler)
             preds = []
             golds = []
             for db in dev_batches:
