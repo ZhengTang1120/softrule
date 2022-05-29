@@ -97,6 +97,7 @@ class BERTtrainer(Trainer):
                 self.nav.cuda()
 
     def update(self, batch):
+        print (self.nav)
         query, support_sents, labels, N, k, batch_size = unpack_batch(batch, self.opt['cuda'], self.opt['device'])
         self.encoder.train()
         qv = self.mlp(self.encoder(query))
