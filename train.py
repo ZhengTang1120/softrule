@@ -21,7 +21,7 @@ parser.add_argument('--data_dir', type=str, default='./')
 parser.set_defaults(lower=False)
 parser.add_argument('--m', type=int, default=20, help='MNAV.')
 parser.add_argument('--lr', type=float, default=1.0, help='Applies to sgd and adagrad.')
-parser.add_argument('--num_epoch', type=int, default=10, help='Number of total training epochs.')
+parser.add_argument('--num_epoch', type=int, default=20, help='Number of total training epochs.')
 parser.add_argument('--batch_size', type=int, default=50, help='Training batch size.')
 parser.add_argument('--info', type=str, default='', help='Optional info for the experiment.')
 parser.add_argument('--cuda', type=bool, default=torch.cuda.is_available())
@@ -44,8 +44,8 @@ random.seed(args.seed)
 
 tokenizer = BertTokenizer.from_pretrained(opt['bert'])
 train_set = EpisodeDataset(opt['data_dir']+opt['train'], tokenizer)
-randsampler = RandomSampler(train_set, num_samples=700)
-train_batches_size = 700 // opt['batch_size']
+randsampler = RandomSampler(train_set, num_samples=7000)
+train_batches_size = 7000 // opt['batch_size']
 dev_set = EpisodeDataset(opt['data_dir']+'dev_episode.json', tokenizer)
 dev_batches = DataLoader(dev_set, batch_size=1, collate_fn=collate_batch)
 opt['num_training_steps'] = train_batches_size * opt['num_epoch']
