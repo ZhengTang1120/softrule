@@ -44,8 +44,8 @@ random.seed(args.seed)
 
 tokenizer = BertTokenizer.from_pretrained(opt['bert'])
 train_set = EpisodeDataset(opt['data_dir']+opt['train'], tokenizer)
-randsampler = RandomSampler(train_set, num_samples=7000)
-train_batches_size = 7000 // opt['batch_size']
+randsampler = RandomSampler(train_set, num_samples=700)
+train_batches_size = 700 // opt['batch_size']
 dev_set = EpisodeDataset(opt['data_dir']+'dev_episode.json', tokenizer)
 dev_batches = DataLoader(dev_set, batch_size=1, collate_fn=collate_batch)
 opt['num_training_steps'] = train_batches_size * opt['num_epoch']
