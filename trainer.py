@@ -135,7 +135,7 @@ class BERTtrainer(Trainer):
 def generate_m_nav(opt, notas=None):
     if notas is None:
         with torch.cuda.device(opt['device']):
-            return torch.rand((opt['m'], in_dim), requires_grad=True, device="cuda")
+            return torch.rand((opt['m'], in_dim), requires_grad=False, device=opt['device'])
     else:
         mnav = []
         navs = torch.load(notas)
