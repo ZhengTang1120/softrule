@@ -72,7 +72,7 @@ class BERTtrainer(Trainer):
         self.hidden_dim = opt['hidden_dim']
         self.encoder = BertEM(opt['bert'])
         # self.mlp = MLP(self.in_dim, opt['hidden_dim'])
-        self.nav = generate_m_nav(opt, notas)
+        self.nav = generate_m_nav(opt, self.in_dim, notas)
         self.nav = Parameter(self.nav, requires_grad=True)
         self.criterion = nn.CrossEntropyLoss()
 
@@ -132,7 +132,7 @@ class BERTtrainer(Trainer):
             qv = svs = query = support_sents = None
             return scores, loss, labels
 
-def generate_m_nav(opt, notas=None):
+def generate_m_nav(opt, in_dim=768*2, notas=None):
     if notas is None:
         with torch.cuda.device(opt['device']):
             return torch.rand((opt['m'], in_dim), requires_grad=False, device=opt['device'])
