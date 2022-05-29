@@ -101,7 +101,7 @@ class BERTtrainer(Trainer):
         svs = self.mlp(svs)
         svs = torch.mean(svs.view(batch_size, N, k, -1), 2)
         sims = torch.bmm(svs, qv.view(batch_size, -1, 1))
-        mlp_nav = self.mlp(self.nav.unsqueeze(0).expand(batch_size, -1,self.hidden_dim))
+        mlp_nav = self.mlp(self.nav.unsqueeze(0).expand(batch_size, -1,self.in_dim))
         sim_navs = torch.bmm(mlp_nav, qv.view(batch_size, -1, 1))
         sim_navs_best = torch.max(sim_navs, dim=1).values
         sims = torch.cat([sims, sim_navs_best.unsqueeze(2)], dim = 1)
