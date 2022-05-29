@@ -60,9 +60,12 @@ class EpisodeDataset(Dataset):
             # elif i>=os and i<=oe:
             #     pass
             # else:
-            t = convert_token(t)
-            for j, sub_token in enumerate(self.tokenizer.tokenize(t)):
-                words.append(sub_token)
+            if '[unused' in t:
+                words.append(t)
+            else:
+                t = convert_token(t)
+                for j, sub_token in enumerate(self.tokenizer.tokenize(t)):
+                    words.append(sub_token)
         
         words = ['[CLS]'] + words + ['[SEP]']
         print (words)
