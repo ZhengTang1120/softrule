@@ -90,6 +90,7 @@ class BERTtrainer(Trainer):
         if opt['cuda']:
             with torch.cuda.device(opt['device']):
                 self.encoder.cuda()
+                self.mlp.cuda()
                 self.criterion.cuda()
 
     def update(self, batch):
