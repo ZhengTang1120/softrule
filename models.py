@@ -27,7 +27,7 @@ class MLP(nn.Module):
         super().__init__()
         self.drop_layer = nn.Dropout(p=0.1)
         self.tanh = nn.Tanh()
-        self.first_liner_layer = nn.Linear(in_dim*2,hidden_dim)
+        self.first_liner_layer = nn.Linear(in_dim,hidden_dim)
         self.second_liner_layer = nn.Linear(hidden_dim,hidden_dim)
     def forward(self, concat_represntentions, do_skip_connection):
         after_drop_out_layer = self.drop_layer(concat_represntentions)
