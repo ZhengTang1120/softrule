@@ -65,7 +65,9 @@ class EpisodeDataset(Dataset):
                 words.append(sub_token)
         
         words = ['[CLS]'] + words + ['[SEP]']
+        print (words)
         tokens = self.tokenizer.convert_tokens_to_ids(words)
+        print (tokens)
         return tokens
 
     def init_notas(self):
