@@ -5,6 +5,7 @@ A trainer class.
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch.nn.parameter import Parameter
 import numpy as np
 
 from models import BertEM, MLP, pool
@@ -72,16 +73,16 @@ class BERTtrainer(Trainer):
         self.encoder = BertEM(opt['bert'])
         self.mlp = MLP(self.in_dim, opt['hidden_dim'])
         self.nav = generate_m_nav(opt, notas)
+        self.nav = Parameter(self.nav, requires_grad=True)
         self.criterion = nn.CrossEntropyLoss()
 
-        param_optimizer = list(self.encoder.named_parameters()) + list(self.mlp.named_parameters())
+        param_optimizer = list(self.encoder.named_parameters()) + list(self.mlp.named_parameters()) + list(self.nav.named_parameters())
         no_decay = ['bias', 'LayerNorm.bias', 'LayerNorm.weight']
         optimizer_grouped_parameters = [
             {'params': [p for n, p in param_optimizer
                         if not any(nd in n for nd in no_decay)], 'weight_decay': 0.01},
             {'params': [p for n, p in param_optimizer
-                        if any(nd in n for nd in no_decay)], 'weight_decay': 0.0},
-            {'params': self.nav, 'weight_decay': 0.0}
+                        if any(nd in n for nd in no_decay)], 'weight_decay': 0.0}
         ]
         self.optimizer = AdamW(optimizer_grouped_parameters, lr=opt['lr'])
         self.scheduler = get_linear_schedule_with_warmup(self.optimizer, 
@@ -92,6 +93,7 @@ class BERTtrainer(Trainer):
                 self.encoder.cuda()
                 self.mlp.cuda()
                 self.criterion.cuda()
+                self.nav.cuda()
 
     def update(self, batch):
         query, support_sents, labels, N, k, batch_size = unpack_batch(batch, self.opt['cuda'], self.opt['device'])
@@ -140,7 +142,7 @@ def generate_m_nav(opt, notas=None):
         for rel in rels:
             mnav.append(navs[rel])
         mnav = torch.cat(mnav, 0)
-        mnav = torch.tensor(mnav.tolist(), requires_grad=True, device=opt['device'], dtype=torch.float)
+        mnav = torch.tensor(mnav.tolist(), requires_grad=False, dtype=torch.float)
         return mnav
 
 
