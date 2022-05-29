@@ -101,8 +101,8 @@ class BERTtrainer(Trainer):
         svs = self.mlp(svs)
         svs = torch.mean(svs.view(batch_size, N, k, -1), 2)
         sims = torch.bmm(svs, qv.view(batch_size, -1, 1))
-        self.nav = self.mlp(self.nav.unsqueeze(0).expand(batch_size, -1,self.hidden_dim))
-        sim_navs = torch.bmm(self.nav, qv.view(batch_size, -1, 1))
+        mlp_nav = self.mlp(self.nav.unsqueeze(0).expand(batch_size, -1,self.hidden_dim))
+        sim_navs = torch.bmm(mlp_nav, qv.view(batch_size, -1, 1))
         sim_navs_best = torch.max(sim_navs, dim=1).values
         sims = torch.cat([sims, sim_navs_best.unsqueeze(2)], dim = 1)
         loss = self.criterion(sims, labels.view(batch_size, 1))
@@ -118,12 +118,11 @@ class BERTtrainer(Trainer):
         query, support_sents, labels, N, k, batch_size = unpack_batch(batch, self.opt['cuda'], self.opt['device'])
         self.encoder.eval()
         with torch.no_grad():
-            qv = self.encoder(query)
+            qv = self.mlp(self.encoder(query))
             svs = self.encoder(support_sents.view(batch_size*N*k, -1))
-            svs = self.mlp(svs)
             svs = torch.mean(svs.view(batch_size, N, k, -1), 2)
-            self.nav = self.mlp(self.nav)
-            svs = torch.cat([svs, self.nav.expand(batch_size, -1,self.hidden_dim)], 1)
+            svs = torch.cat([svs, self.nav.expand(batch_size, -1,self.in_dim)], 1)
+            svs = self.mlp(svs)
             scores = torch.bmm(svs, qv.view(batch_size, -1, 1))
             loss = self.criterion(scores, labels.view(batch_size, 1)).item()
             qv = svs = query = support_sents = None
