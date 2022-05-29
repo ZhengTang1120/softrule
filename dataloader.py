@@ -47,30 +47,25 @@ class EpisodeDataset(Dataset):
 
     def parseTACRED(self, instance):
         words = list()
-        # ss, se = instance['subj_start'], instance['subj_end']
-        # os, oe = instance['obj_start'], instance['obj_end']
+        ss, se = instance['subj_start'], instance['subj_end']
+        os, oe = instance['obj_start'], instance['obj_end']
 
-        for i, t in enumerate(instance['tokens_with_markers']):
-            # if i == ss:
-            #     words.append("[unused%d]"%(ENTITY_TOKEN_TO_ID['[SUBJ-'+instance['subj_type']+']']))
-            # if i == os:
-            #     words.append("[unused%d]"%(ENTITY_TOKEN_TO_ID['[OBJ-'+instance['obj_type']+']']))
-            # if i>=ss and i<=se:
-            #     pass
-            # elif i>=os and i<=oe:
-            #     pass
-            # else:
-            if '[unused' in t:
-                words.append(t)
+        for i, t in enumerate(instance['token']):
+            if i == ss:
+                words.append("[unused%d]"%(ENTITY_TOKEN_TO_ID['[SUBJ-'+instance['subj_type']+']']))
+            if i == os:
+                words.append("[unused%d]"%(ENTITY_TOKEN_TO_ID['[OBJ-'+instance['obj_type']+']']))
+            if i>=ss and i<=se:
+                pass
+            elif i>=os and i<=oe:
+                pass
             else:
                 t = convert_token(t)
                 for j, sub_token in enumerate(self.tokenizer.tokenize(t)):
                     words.append(sub_token)
         
         words = ['[CLS]'] + words + ['[SEP]']
-        print (words)
         tokens = self.tokenizer.convert_tokens_to_ids(words)
-        print (tokens)
         return tokens
 
     def init_notas(self):
