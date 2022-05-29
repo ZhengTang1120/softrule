@@ -7,7 +7,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
 
-from models import BertEM, MLP, pool
+from models import BertModel, BertEM, MLP, pool
 from transformers import AdamW, BertConfig
 from transformers.optimization import get_linear_schedule_with_warmup
 
