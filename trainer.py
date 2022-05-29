@@ -135,6 +135,7 @@ def generate_m_nav(opt, notas=None):
     else:
         mnav = []
         navs = torch.load(notas)
+        print (navs)
         assert opt['m'] <= len(navs)
         rels = random.sample(notas.keys(), opt['m'])
         for rel in rels:
