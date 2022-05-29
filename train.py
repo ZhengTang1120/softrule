@@ -40,21 +40,20 @@ parser.add_argument('--instances_per_epoch', default=700, type=int)
 args = parser.parse_args()
 opt = vars(args)
 
-# torch.manual_seed(args.seed)
-# random.seed(args.seed)
+torch.manual_seed(args.seed)
+random.seed(args.seed)
 
-# tokenizer = BertTokenizer.from_pretrained(opt['bert'])
-# train_set = EpisodeDataset(opt['data_dir']+opt['train'], tokenizer)
-# randsampler = RandomSampler(train_set, num_samples=opt['instances_per_epoch'])
-# train_batches_size = opt['instances_per_epoch'] // opt['batch_size']
-# dev_set = EpisodeDataset(opt['data_dir']+'dev_episode.json', tokenizer)
-# dev_batches = DataLoader(dev_set, batch_size=1, collate_fn=collate_batch)
-# opt['num_training_steps'] = train_batches_size * opt['num_epoch']
-# opt['num_warmup_steps'] = opt['num_training_steps'] * opt['warmup_prop']
-# ensure_dir(opt['save_dir'], verbose=True)
-# eval_step = max(1, train_batches_size // args.eval_per_epoch)
+tokenizer = BertTokenizer.from_pretrained(opt['bert'])
+train_set = EpisodeDataset(opt['data_dir']+opt['train'], tokenizer)
+randsampler = RandomSampler(train_set, num_samples=opt['instances_per_epoch'])
+train_batches_size = opt['instances_per_epoch'] // opt['batch_size']
+dev_set = EpisodeDataset(opt['data_dir']+'dev_episode.json', tokenizer)
+dev_batches = DataLoader(dev_set, batch_size=1, collate_fn=collate_batch)
+opt['num_training_steps'] = train_batches_size * opt['num_epoch']
+opt['num_warmup_steps'] = opt['num_training_steps'] * opt['warmup_prop']
+ensure_dir(opt['save_dir'], verbose=True)
+eval_step = max(1, train_batches_size // args.eval_per_epoch)
 trainer = BERTtrainer(opt, "MNAV.pt")
-exit()
 i = 0
 curr_acc = 0
 for epoch in range(opt['num_epoch']):
