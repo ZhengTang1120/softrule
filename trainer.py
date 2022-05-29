@@ -138,11 +138,9 @@ def generate_m_nav(opt, notas=None):
         assert opt['m'] <= len(navs)
         rels = random.sample(navs.keys(), opt['m'])
         for rel in rels:
-            print (navs[rel].size())
-            print (torch.mean(navs[rel], 0).size())
-            mnav.append(torch.mean(navs[rel], 0))
-        navs = torch.cat(navs, 0)
-        navs = torch.tensor(navs.tolist(), requires_grad=True, device=opt['device'], dtype=torch.float)
-        return navs
+            mnav.append(navs[rel])
+        mnav = torch.cat(mnav, 0)
+        mnav = torch.tensor(mnav.tolist(), requires_grad=True, device=opt['device'], dtype=torch.float)
+        return mnav
 
 
