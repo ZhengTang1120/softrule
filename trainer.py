@@ -72,6 +72,10 @@ class BERTtrainer(Trainer):
         self.encoder = BertEM(opt['bert'])
         self.mlp = MLP(self.in_dim, opt['hidden_dim'])
         self.nav = generate_m_nav(opt, self.in_dim, notas)
+        torch.save(self.nav, "MNAV.pt")
+        self.nav = torch.load("MNAV.pt")
+        print (self.nav)
+        exit()
         self.criterion = nn.CrossEntropyLoss()
 
         param_optimizer = list(self.encoder.named_parameters()) + list(self.mlp.named_parameters())
@@ -133,11 +137,11 @@ def generate_m_nav(opt, in_dim, notas=None):
         with torch.cuda.device(opt['device']):
             return torch.rand((opt['m'], in_dim), requires_grad=True, device="cuda")
     else:
-        navs = []
+        navs = dict()
         model = BertModel.from_pretrained(opt['bert'])
         model.eval()
-        assert opt['m'] <= len(notas)
-        rels = random.sample(notas.keys(), opt['m'])
+        # assert opt['m'] <= len(notas)
+        rels = notas.keys()
         with torch.no_grad():
             for rel in rels:
                 words = notas[rel]
@@ -147,9 +151,9 @@ def generate_m_nav(opt, in_dim, notas=None):
                 obj_mask = torch.logical_and(words.unsqueeze(2).gt(2), words.unsqueeze(2).lt(20))
                 nav = torch.cat([pool(h, subj_mask.eq(0), type='avg'), pool(h, obj_mask.eq(0), type='avg')], 1)
                 nav = torch.mean(nav, 0)
-                navs.append(nav.view(1, -1))
-        navs = torch.cat(navs, 0)
-        navs = torch.tensor(navs.cpu().tolist(), requires_grad=True, device=opt['device'], dtype=torch.float)
+                navs[rel] = nav.view(1, -1)
+        # navs = torch.cat(navs, 0)
+        # navs = torch.tensor(navs.cpu().tolist(), requires_grad=True, device=opt['device'], dtype=torch.float)
         return navs
 
 
