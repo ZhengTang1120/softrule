@@ -8,17 +8,11 @@ ENTITY_TOKEN_TO_ID = {'[OBJ-CAUSE_OF_DEATH]': 3, '[OBJ-CITY]': 2, '[OBJ-DATE]': 
 PAD_ID = 0
 
 class EpisodeDataset(Dataset):
-    def __init__(self, filename, tokenizer, nota_sample='nota.json'):
+    def __init__(self, filename, tokenizer):
         super(EpisodeDataset).__init__()
         f = json.load(open(filename))
         self.tokenizer = tokenizer
         self.parse(f[0], f[2])
-        if nota_sample is not None:
-            self.nota_sample = nota_sample
-            self.notas = self.init_notas()
-        else:
-            self.nota_sample = None
-            self.notas = None
 
     def __len__(self):
         return len(self.labels)
@@ -67,16 +61,6 @@ class EpisodeDataset(Dataset):
         words = ['[CLS]'] + words + ['[SEP]']
         tokens = self.tokenizer.convert_tokens_to_ids(words)
         return tokens
-
-    def init_notas(self):
-        sampled_instances = json.load(open(self.nota_sample))
-        notas = defaultdict(list)
-        for rel in sampled_instances:
-            for instance in sampled_instances[rel]:
-                tokens = self.parseTACRED(instance)
-                notas[rel].append(tokens)
-            notas[rel] = torch.LongTensor(pad_list(notas[rel]))
-        return notas
 
 def convert_token(token):
     """ Convert PTB tokens to normal tokens """
