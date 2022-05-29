@@ -71,11 +71,7 @@ class BERTtrainer(Trainer):
         self.hidden_dim = opt['hidden_dim']
         self.encoder = BertEM(opt['bert'])
         self.mlp = MLP(self.in_dim, opt['hidden_dim'])
-        self.nav = generate_m_nav(opt, self.in_dim, notas)
-        torch.save(self.nav, "MNAV.pt")
-        self.nav = torch.load("MNAV.pt")
-        print (self.nav)
-        exit()
+        self.nav = generate_m_nav(opt, notas)
         self.criterion = nn.CrossEntropyLoss()
 
         param_optimizer = list(self.encoder.named_parameters()) + list(self.mlp.named_parameters())
