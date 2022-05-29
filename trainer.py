@@ -98,7 +98,7 @@ class BERTtrainer(Trainer):
     def update(self, batch):
         query, support_sents, labels, N, k, batch_size = unpack_batch(batch, self.opt['cuda'], self.opt['device'])
         self.encoder.train()
-        # qv = self.mlp(self.encoder(query))
+        qv = self.encoder(query) #self.mlp(self.encoder(query))
         svs = self.encoder(support_sents.view(batch_size*N*k, -1))
         # svs = self.mlp(svs)
         svs = torch.mean(svs.view(batch_size, N, k, -1), 2)
@@ -121,6 +121,7 @@ class BERTtrainer(Trainer):
         query, support_sents, labels, N, k, batch_size = unpack_batch(batch, self.opt['cuda'], self.opt['device'])
         self.encoder.eval()
         with torch.no_grad():
+            qv = self.encoder(query)
             # qv = self.mlp(self.encoder(query))
             svs = self.encoder(support_sents.view(batch_size*N*k, -1))
             svs = torch.mean(svs.view(batch_size, N, k, -1), 2)
