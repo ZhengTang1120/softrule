@@ -137,17 +137,19 @@ def generate_m_nav(opt, in_dim, notas=None):
     else:
         navs = []
         model = BertModel.from_pretrained(opt['bert'])
+        model.eval()
         assert opt['m'] <= len(notas)
         rels = random.sample(notas.keys(), opt['m'])
-        for rel in rels:
-            words = notas[rel]
-            output = model(words)
-            h = output.last_hidden_state
-            subj_mask = torch.logical_and(words.unsqueeze(2).gt(0), words.unsqueeze(2).lt(3))
-            obj_mask = torch.logical_and(words.unsqueeze(2).gt(2), words.unsqueeze(2).lt(20))
-            nav = torch.cat([pool(h, subj_mask.eq(0), type='avg'), pool(h, obj_mask.eq(0), type='avg')], 1)
-            nav = torch.mean(nav, 0)
-            navs.append(nav.view(1, -1))
+        with torch.no_grad():
+            for rel in rels:
+                words = notas[rel]
+                output = model(words)
+                h = output.last_hidden_state
+                subj_mask = torch.logical_and(words.unsqueeze(2).gt(0), words.unsqueeze(2).lt(3))
+                obj_mask = torch.logical_and(words.unsqueeze(2).gt(2), words.unsqueeze(2).lt(20))
+                nav = torch.cat([pool(h, subj_mask.eq(0), type='avg'), pool(h, obj_mask.eq(0), type='avg')], 1)
+                nav = torch.mean(nav, 0)
+                navs.append(nav.view(1, -1))
         navs = torch.cat(navs, 0)
         navs = torch.tensor(navs.cpu().tolist(), requires_grad=True, device=opt['device'], dtype=torch.float)
         return navs
