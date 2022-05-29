@@ -7,7 +7,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
 
-from models import BertEM, MLP
+from models import BertEM, MLP, pool
 from transformers import AdamW, BertConfig
 from transformers.optimization import get_linear_schedule_with_warmup
 
@@ -130,20 +130,26 @@ class BERTtrainer(Trainer):
             qv = svs = query = support_sents = None
             return scores, loss, labels
 
-    def generate_m_nav(self, notas=None):
-        if notas is None:
-            with torch.cuda.device(self.opt['device']):
-                return torch.rand((self.opt['m'], self.in_dim), requires_grad=True, device="cuda")
-        else:
-            navs = []
-            assert self.opt['m'] <= len(notas)
-            rels = random.sample(notas.keys(), self.opt['m'])
-            for rel in rels:
-                nav = self.encoder(notas[rel]) 
-                nav = torch.mean(nav, 0)
-                navs.append(nav.view(1, -1))
-            navs = torch.cat(navs, 0)
-            navs = torch.tensor(navs.cpu().tolist(), requires_grad=True, device=self.opt['device'], dtype=torch.float)
-            return navs
+def generate_m_nav(opt, in_dim, notas=None):
+    if notas is None:
+        with torch.cuda.device(opt['device']):
+            return torch.rand((opt['m'], in_dim), requires_grad=True, device="cuda")
+    else:
+        navs = []
+        model = BertModel.from_pretrained(opt['bert'])
+        assert opt['m'] <= len(notas)
+        rels = random.sample(notas.keys(), opt['m'])
+        for rel in rels:
+            words = notas[rel]
+            output = model(words)
+            h = output.last_hidden_state
+            subj_mask = torch.logical_and(words.unsqueeze(2).gt(0), words.unsqueeze(2).lt(3))
+            obj_mask = torch.logical_and(words.unsqueeze(2).gt(2), words.unsqueeze(2).lt(20))
+            nav = torch.cat([pool(h, subj_mask.eq(0), type='avg'), pool(h, obj_mask.eq(0), type='avg')], 1)
+            nav = torch.mean(nav, 0)
+            navs.append(nav.view(1, -1))
+        navs = torch.cat(navs, 0)
+        navs = torch.tensor(navs.cpu().tolist(), requires_grad=True, device=opt['device'], dtype=torch.float)
+        return navs
 
 
