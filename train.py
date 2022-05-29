@@ -53,7 +53,7 @@ opt['num_training_steps'] = train_batches_size * opt['num_epoch']
 opt['num_warmup_steps'] = opt['num_training_steps'] * opt['warmup_prop']
 ensure_dir(opt['save_dir'], verbose=True)
 eval_step = max(1, train_batches_size // args.eval_per_epoch)
-trainer = BERTtrainer(opt, train_set.notas)
+trainer = BERTtrainer(opt, "MNAV.pt")
 i = 0
 curr_acc = 0
 for epoch in range(opt['num_epoch']):
