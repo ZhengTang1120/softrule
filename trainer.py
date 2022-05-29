@@ -71,7 +71,7 @@ class BERTtrainer(Trainer):
         self.hidden_dim = opt['hidden_dim']
         self.encoder = BertEM(opt['bert'])
         self.mlp = MLP(self.in_dim, opt['hidden_dim'])
-        self.nav = self.generate_m_nav(notas)
+        self.nav = generate_m_nav(opt, self.in_dim, notas)
         self.criterion = nn.CrossEntropyLoss()
 
         param_optimizer = list(self.encoder.named_parameters()) + list(self.mlp.named_parameters())
@@ -100,10 +100,9 @@ class BERTtrainer(Trainer):
         svs = self.encoder(support_sents.view(batch_size*N*k, -1))
         svs = self.mlp(svs)
         svs = torch.mean(svs.view(batch_size, N, k, -1), 2)
-        # svs = torch.cat([svs, torch.mean(self.nav, 0).unsqueeze(0).expand(batch_size, -1,self.in_dim)], 1)
         sims = torch.bmm(svs, qv.view(batch_size, -1, 1))
-        self.nav = self.mlp(self.nav)
-        sim_navs = torch.bmm(self.nav.unsqueeze(0).expand(batch_size, -1,self.hidden_dim), qv.view(batch_size, -1, 1))
+        self.nav = self.mlp(self.nav.unsqueeze(0).expand(batch_size, -1,self.hidden_dim))
+        sim_navs = torch.bmm(self.nav, qv.view(batch_size, -1, 1))
         sim_navs_best = torch.max(sim_navs, dim=1).values
         sims = torch.cat([sims, sim_navs_best.unsqueeze(2)], dim = 1)
         loss = self.criterion(sims, labels.view(batch_size, 1))
