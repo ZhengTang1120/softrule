@@ -7,8 +7,6 @@ class BertEM(nn.Module):
     def __init__(self, model):
         super().__init__()
         self.model = BertModel.from_pretrained(model)
-        self.first_linear = 
-        self.second_linear = 
 
     def forward(self, words):
         output = self.model(words)
@@ -23,6 +21,22 @@ class BertEM(nn.Module):
                 print ("obj missing", words[i])
         v = torch.cat([pool(h, subj_mask.eq(0), type='avg'), pool(h, obj_mask.eq(0), type='avg')], 1)
         return v
+
+class MLP(nn.Module):
+    def __init__(self, in_dim, hidden_dim):
+        self.drop_layer = nn.Dropout(p=0.1)
+        self.tanh = nn.Tanh()
+        self.first_liner_layer = nn.Linear(in_dim*2,hidden_dim)
+        self.second_liner_layer = nn.Linear(hidden_dim,hidden_dim)
+    def forward(self, concat_represntentions, do_skip_connection):
+        after_drop_out_layer = self.drop_layer(concat_represntentions)
+        after_first_layer = self.first_liner_layer(after_drop_out_layer)
+        x = self.tanh(after_first_layer)
+        x = self.second_liner_layer(x)
+        if do_skip_connection:
+            x = x + after_first_layer
+
+        return x
 
 def pool(h, mask=None, type='max'):
     if type == 'max':

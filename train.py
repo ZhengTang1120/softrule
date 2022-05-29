@@ -33,7 +33,8 @@ parser.add_argument('--warmup_prop', type=float, default=0.3, help='Proportion o
 parser.add_argument("--eval_per_epoch", default=10, type=int, help="How many times it evaluates on dev set per epoch")
 parser.add_argument('--bert', default='bert-base-uncased', type=str, help='Which bert to use.')
 parser.add_argument('--train', default='train_episode.json', type=str, help='Which training set to use.')
-parser.add_argument('--seed', default='42', type=int, help='Random Seed')
+parser.add_argument('--seed', default=42, type=int, help='Random Seed')
+parser.add_argument('--hidden_dim', default=2000, type=int, help='Hidden Size')
 
 args = parser.parse_args()
 opt = vars(args)
@@ -43,9 +44,8 @@ random.seed(args.seed)
 
 tokenizer = BertTokenizer.from_pretrained(opt['bert'])
 train_set = EpisodeDataset(opt['data_dir']+opt['train'], tokenizer)
-randsampler = RandomSampler(train_set, num_samples=6000)
-devsampler = RandomSampler(train_set, num_samples=600)
-train_batches_size = 6000 // opt['batch_size']
+randsampler = RandomSampler(train_set, num_samples=700)
+train_batches_size = 700 // opt['batch_size']
 dev_set = EpisodeDataset(opt['data_dir']+'dev_episode.json', tokenizer)
 dev_batches = DataLoader(dev_set, batch_size=1, collate_fn=collate_batch)
 opt['num_training_steps'] = train_batches_size * opt['num_epoch']
