@@ -144,7 +144,7 @@ def generate_m_nav(opt, notas=None):
         for rel in rels:
             mnav.append(navs[rel])
         mnav = torch.cat(mnav, 0)
-        mnav = torch.tensor(mnav.tolist(), requires_grad=False, dtype=torch.float)
+        mnav = torch.tensor(mnav.tolist(), requires_grad=False, device=opt['device'], dtype=torch.float)
         return mnav
 
 
