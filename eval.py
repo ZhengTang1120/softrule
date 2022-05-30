@@ -50,9 +50,9 @@ matched = [1 if p == nrg[i] and p == 1 else 0 for i, p in enumerate(nrp)]
 
 print (sum(nrp), sum(nrg))
 
-recall = sum(matched)/sum(nrg)
-precision = sum(matched)/sum(nrp)
-f1 = 2 * precision * recall / (precision + recall)
+# recall = sum(matched)/sum(nrg)
+# precision = sum(matched)/sum(nrp)
+# f1 = 2 * precision * recall / (precision + recall)
 
 with open("NRC_output_%s.txt"%args.dataset.split('.')[0], 'w') as f:
     for ps in preds:
