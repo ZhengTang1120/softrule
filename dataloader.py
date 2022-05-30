@@ -13,6 +13,7 @@ class EpisodeDataset(Dataset):
         f = json.load(open(filename))
         self.tokenizer = tokenizer
         self.query_size = len(f[2][0][1][0])
+        print (self.query_size)
         self.parse(f[0], f[2])
 
     def __len__(self):
