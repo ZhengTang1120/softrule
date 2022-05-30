@@ -57,7 +57,7 @@ print (sum(nrp), sum(nrg))
 with open("NRC_output_%s.txt"%args.dataset.split('.')[0], 'w') as f:
     for ps in preds:
         output = ["no_relation" if p >= 5 else "relation" for p in ps]
-        f.write(output)
+        f.write("\t".join(output))
         f.write('\n')
         # if p == 0:
         #     f.write("no_relation\n")
