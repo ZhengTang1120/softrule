@@ -39,7 +39,7 @@ class EpisodeDataset(Dataset):
             self.queries.append(self.parseTACRED(ep['meta_test'][0]))
             self.labels.append([])
             for j,l in enumerate(labels[i][1]):
-                self.labels[i][-1].append(labels[i][0].index(l) if l in labels[i][0] else len(labels[i][0]))
+                self.labels[-1].append(labels[i][0].index(l) if l in labels[i][0] else len(labels[i][0]))
 
     def parseTACRED(self, instance):
         words = list()
