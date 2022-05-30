@@ -40,10 +40,8 @@ for db in data_batches:
     preds += np.argmax(score.squeeze(2).data.cpu().numpy(), axis=1).tolist()
     golds += labels.cpu().tolist()
 
-flat_preds = []
-for p in preds:
-    flat_preds += p
-nrp = [0 if p >= 5 else 1 for p in flat_preds]
+
+nrp = [0 if p >= 5 else 1 for p in preds]
 nrg = [0 if g >= 5 else 1 for g in golds]
 
 matched = [1 if p == nrg[i] and p == 1 else 0 for i, p in enumerate(nrp)]
@@ -55,8 +53,8 @@ print (sum(nrp), sum(nrg))
 # f1 = 2 * precision * recall / (precision + recall)
 
 with open("NRC_output_%s.txt"%args.dataset.split('.')[0], 'w') as f:
-    for ps in preds:
-        output = ["no_relation" if p >= 5 else "relation" for p in ps]
+    for i in range(0, len(nrp), 3):
+        output = ["no_relation" if p == 5 else "relation" for p in nrp[i:i+3]]
         f.write("\t".join(output))
         f.write('\n')
         # if p == 0:
