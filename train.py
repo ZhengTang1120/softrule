@@ -72,7 +72,7 @@ for epoch in range(opt['num_epoch']):
             nrp = [0 if p >= 5 else 1 for p in preds]
             nrg = [0 if g >= 5 else 1 for g in golds]
 
-            matched = [1 if p == nrg[i] and p == 1 else 0 for i, p in enumerate(nrp)]
+            matched = [1 if p == nrg[j] and p == 1 else 0 for j, p in enumerate(nrp)]
             try:
                 recall = sum(matched)/sum(nrg)
             except ZeroDivisionError:
