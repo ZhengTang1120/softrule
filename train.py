@@ -62,7 +62,7 @@ for epoch in range(opt['num_epoch']):
         loss = trainer.update(b)
         if (i + 1) % eval_step == 0:
             # eval on dev
-            print("Evaluating on dev set...")
+            print("Evaluating on dev set at epoch %d..."%epoch)
             preds = []
             golds = []
             for db in dev_batches:
@@ -90,7 +90,6 @@ for epoch in range(opt['num_epoch']):
                 trainer.save(opt['save_dir']+'/best_model.pt')
             print ("precision: %f, recall: %f, f1: %f, loss: %f"%(precision, recall, f1, loss))
             print ("current best f1: %f, "%(curr_acc))
-            exit()
         i += 1
 
 
