@@ -54,7 +54,7 @@ print (sum(nrp), sum(nrg))
 
 with open("NRC_output_%s.txt"%args.dataset.split('.')[0], 'w') as f:
     for i in range(0, len(nrp), 3):
-        output = ["no_relation" if p == 5 else "relation" for p in nrp[i:i+3]]
+        output = ["no_relation" if p == 0 else "relation" for p in nrp[i:i+3]]
         f.write("\t".join(output))
         f.write('\n')
         # if p == 0:
