@@ -39,7 +39,7 @@ for db in data_batches:
     score, loss, labels, query_size = trainer.predict(db)
     preds += np.argmax(score.squeeze(2).data.cpu().numpy(), axis=1).tolist()
     golds += labels.cpu().tolist()
-
+print (preds)
 nrp = [0 if p >= 5 else 1 for p in preds]
 nrg = [0 if g >= 5 else 1 for g in golds]
 
