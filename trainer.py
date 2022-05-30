@@ -106,7 +106,7 @@ class BERTtrainer(Trainer):
         sims = torch.bmm(svs, qv.view(batch_size, -1, 1))
         # mlp_nav = self.mlp(self.nav.unsqueeze(0).expand(batch_size, -1,self.in_dim))
         # sim_navs = torch.bmm(mlp_nav, qv.view(batch_size, -1, 1))
-        sim_navs = torch.bmm(self.nav.unsqueeze(0).expand(batch_size, -1,self.in_dim), qv.view(batch_size, -1, 1))
+        sim_navs = torch.bmm(self.nav.unsqueeze(0).expand(batch_size, -1,self.in_dim), qv.view(batch_size, -1, query_size))
         sim_navs_best = torch.max(sim_navs, dim=1).values
         sims = torch.cat([sims, sim_navs_best.unsqueeze(2)], dim = 1)
         loss = self.criterion(sims, labels.view(batch_size, 1))
@@ -122,17 +122,20 @@ class BERTtrainer(Trainer):
         query, support_sents, labels, N, k, batch_size, query_size = unpack_batch(batch, self.opt['cuda'], self.opt['device'])
         self.encoder.eval()
         with torch.no_grad():
-            qv = self.encoder(query)
+            qvs = self.encoder(query)
             # qv = self.mlp(self.encoder(query))
             svs = self.encoder(support_sents.view(batch_size*N*k, -1))
             svs = torch.mean(svs.view(batch_size, N, k, -1), 2)
             svs = torch.cat([svs, self.nav.expand(batch_size, -1, self.in_dim)], 1)
             # svs = self.mlp(svs)
-            scores = torch.bmm(svs, qv.view(batch_size, -1, query_size))
-
-            loss = self.criterion(scores.view(batch_size*query_size, -1, 1), labels.view(batch_size * query_size, 1)).item()
+            loss = 0
+            for qv in qvs:
+                print (qv.size())
+                scores = torch.bmm(svs, qv.view(batch_size, -1, 1))
+                loss += self.criterion(scores.view(batch_size*query_size, -1, 1), labels.view(batch_size * query_size, 1))
+            
             qv = svs = query = support_sents = None
-            return scores, loss, labels, query_size
+            return scores, loss.item(), labels, query_size
 
 def generate_m_nav(opt, in_dim=768*2, notas=None):
     if notas is None:
