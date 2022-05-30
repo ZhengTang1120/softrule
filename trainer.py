@@ -132,7 +132,7 @@ class BERTtrainer(Trainer):
             scores = []
             for qv in qvs:
                 scores.append(torch.bmm(svs, qv.view(batch_size, -1, 1)))
-            scores = torch.cat(scores, dim=1)
+            scores = torch.cat(scores, dim=0)
             print (scores.size(), labels.size())
             loss = self.criterion(scores.view(batch_size, -1, 1), labels.view(batch_size, 1))
             qv = svs = query = support_sents = None
