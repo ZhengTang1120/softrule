@@ -30,7 +30,7 @@ trainer.load(model_file)
 
 tokenizer = BertTokenizer.from_pretrained(opt['bert'])
 
-data_set = EpisodeDataset(opt['data_dir']+f'{args.dataset}_episode.json', tokenizer)
+data_set = EpisodeDataset(opt['data_dir']+f'{args.dataset}', tokenizer)
 data_batches = DataLoader(data_set, batch_size=1, collate_fn=collate_batch)
 
 preds = []
