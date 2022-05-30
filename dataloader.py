@@ -12,9 +12,7 @@ class EpisodeDataset(Dataset):
         super(EpisodeDataset).__init__()
         f = json.load(open(filename))
         self.tokenizer = tokenizer
-        self.query_size = len(f[2][0][1][0])
-        print (self.query_size)
-        print (f[2][0][1][0])
+        self.query_size = len(f[2][0][1])
         self.parse(f[0], f[2])
 
     def __len__(self):
@@ -30,8 +28,6 @@ class EpisodeDataset(Dataset):
         return self.labels    
 
     def parse(self, episodes, labels):
-        print (labels)
-        print (labels[0][1][0])
         self.queries = list()
         self.support_sents = list()
         self.labels = list()
