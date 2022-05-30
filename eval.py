@@ -51,7 +51,7 @@ recall = sum(matched)/sum(nrg)
 precision = sum(matched)/sum(nrp)
 f1 = 2 * precision * recall / (precision + recall)
 
-with open("NRC_output.txt", 'w') as f:
+with open("NRC_output_%s.txt"%args.dataset.split('.')[0], 'w') as f:
     for i, p in enumerate(nrp):
         if p == 0:
             f.write("no_relation\n")
