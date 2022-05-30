@@ -36,7 +36,7 @@ data_batches = DataLoader(data_set, batch_size=1, collate_fn=collate_batch)
 preds = []
 golds = []
 for db in data_batches:
-    score, loss, labels, query_size = trainer.predict(db)
+    score, loss, labels = trainer.predict(db)
     preds += np.argmax(score.squeeze(2).data.cpu().numpy(), axis=1).tolist()
     golds += labels.cpu().tolist()
 
