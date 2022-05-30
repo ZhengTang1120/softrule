@@ -32,7 +32,7 @@ class EpisodeDataset(Dataset):
         self.labels = list()
         for i, ep in enumerate(episodes):
             for j, q in enumerate(ep['meta_test']):
-                self.queries[-1].append(self.parseTACRED(q))
+                self.queries.append(self.parseTACRED(q))
                 self.labels.append(labels[i][0].index(labels[i][1][j]) if labels[i][1][j] in labels[i][0] else len(labels[i][0]))
                 self.support_sents.append([])
                 for way in ep['meta_train']:
