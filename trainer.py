@@ -58,11 +58,10 @@ def unpack_batch(batch, cuda=False, device=0):
         query = batch[0]
         support_sents = batch[1]
         labels = batch[2]
-    batch_size = support_sents.size(0)
+    batch_size = query.size(0)
     N = support_sents.size(1)
     k = support_sents.size(2)
-    query_size = query.size(0) // batch_size
-    return query, support_sents, labels, N, k, batch_size, query_size
+    return query, support_sents, labels, N, k, batch_size
 
 
 class BERTtrainer(Trainer):
@@ -97,20 +96,19 @@ class BERTtrainer(Trainer):
                 self.criterion.cuda()
 
     def update(self, batch):
-        query, support_sents, labels, N, k, batch_size, query_size = unpack_batch(batch, self.opt['cuda'], self.opt['device'])
+        query, support_sents, labels, N, k, batch_size = unpack_batch(batch, self.opt['cuda'], self.opt['device'])
         self.encoder.train()
-        qvs = self.encoder(query)#self.mlp(self.encoder(query))
+        qv = self.encoder(query)#self.mlp(self.encoder(query))
         svs = self.encoder(support_sents.view(batch_size*N*k, -1))
         # svs = self.mlp(svs)
         svs = torch.mean(svs.view(batch_size, N, k, -1), 2)
-        for qv in qvs:
-            sims = torch.bmm(svs, qv.view(batch_size, -1, 1))
-            # mlp_nav = self.mlp(self.nav.unsqueeze(0).expand(batch_size, -1,self.in_dim))
-            # sim_navs = torch.bmm(mlp_nav, qv.view(batch_size, -1, 1))
-            sim_navs = torch.bmm(self.nav.unsqueeze(0).expand(batch_size, -1,self.in_dim), qv.view(batch_size, -1, 1))
-            sim_navs_best = torch.max(sim_navs, dim=1).values
-            sims = torch.cat([sims, sim_navs_best.unsqueeze(2)], dim = 1)
-        loss += self.criterion(sims, labels.view(batch_size, 1))
+        sims = torch.bmm(svs, qv.view(batch_size, -1, 1))
+        # mlp_nav = self.mlp(self.nav.unsqueeze(0).expand(batch_size, -1,self.in_dim))
+        # sim_navs = torch.bmm(mlp_nav, qv.view(batch_size, -1, 1))
+        sim_navs = torch.bmm(self.nav.unsqueeze(0).expand(batch_size, -1,self.in_dim), qv.view(batch_size, -1, 1))
+        sim_navs_best = torch.max(sim_navs, dim=1).values
+        sims = torch.cat([sims, sim_navs_best.unsqueeze(2)], dim = 1)
+        loss = self.criterion(sims, labels.view(batch_size, 1))
         loss_val = loss.item()
         loss.backward()
         self.optimizer.step()
@@ -120,22 +118,19 @@ class BERTtrainer(Trainer):
         return loss_val
 
     def predict(self, batch):
-        query, support_sents, labels, N, k, batch_size, query_size = unpack_batch(batch, self.opt['cuda'], self.opt['device'])
+        query, support_sents, labels, N, k, batch_size = unpack_batch(batch, self.opt['cuda'], self.opt['device'])
         self.encoder.eval()
         with torch.no_grad():
-            qvs = self.encoder(query)
+            qv = self.encoder(query)
             # qv = self.mlp(self.encoder(query))
             svs = self.encoder(support_sents.view(batch_size*N*k, -1))
             svs = torch.mean(svs.view(batch_size, N, k, -1), 2)
-            svs = torch.cat([svs, self.nav.expand(batch_size, -1, self.in_dim)], 1)
+            svs = torch.cat([svs, self.nav.expand(batch_size, -1,self.in_dim)], 1)
             # svs = self.mlp(svs)
-            scores = []
-            for qv in qvs:
-                scores.append(torch.bmm(svs, qv.view(batch_size, -1, 1)))
-            scores = torch.cat(scores, dim=0)
-            loss = self.criterion(scores.view(batch_size*query_size, -1, 1), labels.view(batch_size*query_size, 1))
+            scores = torch.bmm(svs, qv.view(batch_size, -1, 1))
+            loss = self.criterion(scores, labels.view(batch_size, 1)).item()
             qv = svs = query = support_sents = None
-            return scores, loss.item(), labels, query_size
+            return scores, loss, labels
 
 def generate_m_nav(opt, in_dim=768*2, notas=None):
     if notas is None:
@@ -151,5 +146,4 @@ def generate_m_nav(opt, in_dim=768*2, notas=None):
         mnav = torch.cat(mnav, 0)
         mnav = torch.tensor(mnav.tolist(), requires_grad=False, device=opt['device'], dtype=torch.float)
         return mnav
-
 
