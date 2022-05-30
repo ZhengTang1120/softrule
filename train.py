@@ -90,6 +90,7 @@ for epoch in range(opt['num_epoch']):
                 trainer.save(opt['save_dir']+'/best_model.pt')
             print ("precision: %f, recall: %f, f1: %f, loss: %f"%(precision, recall, f1, loss))
             print ("current best f1: %f, "%(curr_acc))
+            exit()
         i += 1
 
 
