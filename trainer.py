@@ -62,6 +62,7 @@ def unpack_batch(batch, cuda=False, device=0):
     N = support_sents.size(1)
     k = support_sents.size(2)
     query_size = query.size(0) / batch_size
+    print (query_size)
     return query, support_sents, labels, N, k, batch_size, query_size
 
 
