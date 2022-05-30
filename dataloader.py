@@ -94,6 +94,7 @@ def collate_batch(batch):
     labels = list()
     max_ss_l = max([max([max([len(s) for s in ss]) for ss in d['support_sents']]) for d in batch])
     for d in batch:
+        print (d['query'], d['label'])
         queries += d['query']#.append(d['query'])
         support_sents.append([])
         for ss in d['support_sents']:
