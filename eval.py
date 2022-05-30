@@ -48,19 +48,24 @@ matched = [1 if p == nrg[i] and p == 1 else 0 for i, p in enumerate(nrp)]
 
 print (sum(nrp), sum(nrg))
 
-# recall = sum(matched)/sum(nrg)
-# precision = sum(matched)/sum(nrp)
-# f1 = 2 * precision * recall / (precision + recall)
+try:
+    recall = sum(matched)/sum(nrg)
+except ZeroDivisionError:
+    recall = 0
+try:
+    precision = sum(matched)/sum(nrp)
+except ZeroDivisionError:
+    precision = 0
+try:
+    f1 = 2 * precision * recall / (precision + recall)
+except ZeroDivisionError:
+    f1 = 0
 
 with open("NRC_output_%s.txt"%args.dataset.split('.')[0], 'w') as f:
-    for i in range(0, len(nrp), 3):
+    for i in range(0, len(nrp), data_set.query_size):
         output = ["no_relation" if p == 0 else "relation" for p in nrp[i:i+3]]
         f.write("\t".join(output))
         f.write('\n')
-        # if p == 0:
-        #     f.write("no_relation\n")
-        # else:
-        #     f.write("relation\n")
 
 print ("current precision: %f, recall: %f, f1: %f"%(precision, recall, f1))
 
