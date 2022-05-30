@@ -14,7 +14,7 @@ class EpisodeDataset(Dataset):
         self.tokenizer = tokenizer
         self.query_size = len(f[2][0][1][0])
         print (self.query_size)
-        print (f[2])
+        print (f[2][0][1][0])
         self.parse(f[0], f[2])
 
     def __len__(self):
