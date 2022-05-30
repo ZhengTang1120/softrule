@@ -103,7 +103,6 @@ class BERTtrainer(Trainer):
         svs = self.encoder(support_sents.view(batch_size*N*k, -1))
         # svs = self.mlp(svs)
         svs = torch.mean(svs.view(batch_size, N, k, -1), 2)
-        loss = 0
         for qv in qvs:
             sims = torch.bmm(svs, qv.view(batch_size, -1, 1))
             # mlp_nav = self.mlp(self.nav.unsqueeze(0).expand(batch_size, -1,self.in_dim))
@@ -111,7 +110,7 @@ class BERTtrainer(Trainer):
             sim_navs = torch.bmm(self.nav.unsqueeze(0).expand(batch_size, -1,self.in_dim), qv.view(batch_size, -1, 1))
             sim_navs_best = torch.max(sim_navs, dim=1).values
             sims = torch.cat([sims, sim_navs_best.unsqueeze(2)], dim = 1)
-            loss += self.criterion(sims, labels.view(batch_size, 1))
+        loss += self.criterion(sims, labels.view(batch_size, 1))
         loss_val = loss.item()
         loss.backward()
         self.optimizer.step()
@@ -130,11 +129,11 @@ class BERTtrainer(Trainer):
             svs = torch.mean(svs.view(batch_size, N, k, -1), 2)
             svs = torch.cat([svs, self.nav.expand(batch_size, -1, self.in_dim)], 1)
             # svs = self.mlp(svs)
-            loss = 0
             scores = []
             for qv in qvs:
                 scores.append(torch.bmm(svs, qv.view(batch_size, -1, 1)))
             scores = torch.cat(scores, dim=1)
+            print (scores.size(), labels.size())
             loss = self.criterion(scores.view(batch_size, -1, 1), labels.view(batch_size, 1))
             qv = svs = query = support_sents = None
             return scores, loss.item(), labels, query_size
