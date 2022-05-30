@@ -37,7 +37,9 @@ class EpisodeDataset(Dataset):
                 for shot in way:
                     self.support_sents[-1][-1].append(self.parseTACRED(shot))
             self.queries.append(self.parseTACRED(ep['meta_test'][0]))
-            self.labels.append(labels[i][0].index(labels[i][1][0]) if labels[i][1][0] in labels[i][0] else len(labels[i][0]))
+            self.labels.append([])
+            for j,l in enumerate(labels[i][1]):
+                self.labels[i][-1].append(labels[i][0].index(l) if l in labels[i][0] else len(labels[i][0]))
 
     def parseTACRED(self, instance):
         words = list()
@@ -92,11 +94,12 @@ def collate_batch(batch):
     labels = list()
     max_ss_l = max([max([max([len(s) for s in ss]) for ss in d['support_sents']]) for d in batch])
     for d in batch:
-        queries.append(d['query'])
+        queries += d['query']#.append(d['query'])
         support_sents.append([])
         for ss in d['support_sents']:
             support_sents[-1].append(pad_list(ss, max_ss_l))
-        labels.append(d['label'])
+        labels += d['label']#.append(d['label'])
+    assert len(labels) == len(queries)
     return torch.LongTensor(pad_list(queries)), torch.LongTensor(support_sents), torch.LongTensor(labels)
 
 
