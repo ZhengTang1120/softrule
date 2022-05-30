@@ -99,17 +99,19 @@ class BERTtrainer(Trainer):
     def update(self, batch):
         query, support_sents, labels, N, k, batch_size, query_size = unpack_batch(batch, self.opt['cuda'], self.opt['device'])
         self.encoder.train()
-        qv = self.encoder(query)#self.mlp(self.encoder(query))
+        qvs = self.encoder(query)#self.mlp(self.encoder(query))
         svs = self.encoder(support_sents.view(batch_size*N*k, -1))
         # svs = self.mlp(svs)
         svs = torch.mean(svs.view(batch_size, N, k, -1), 2)
-        sims = torch.bmm(svs, qv.view(batch_size, -1, 1))
-        # mlp_nav = self.mlp(self.nav.unsqueeze(0).expand(batch_size, -1,self.in_dim))
-        # sim_navs = torch.bmm(mlp_nav, qv.view(batch_size, -1, 1))
-        sim_navs = torch.bmm(self.nav.unsqueeze(0).expand(batch_size, -1,self.in_dim), qv.view(batch_size, -1, query_size))
-        sim_navs_best = torch.max(sim_navs, dim=1).values
-        sims = torch.cat([sims, sim_navs_best.unsqueeze(2)], dim = 1)
-        loss = self.criterion(sims, labels.view(batch_size, 1))
+        loss = 0
+        for qv in qvs:
+            sims = torch.bmm(svs, qv.view(batch_size, -1, 1))
+            # mlp_nav = self.mlp(self.nav.unsqueeze(0).expand(batch_size, -1,self.in_dim))
+            # sim_navs = torch.bmm(mlp_nav, qv.view(batch_size, -1, 1))
+            sim_navs = torch.bmm(self.nav.unsqueeze(0).expand(batch_size, -1,self.in_dim), qv.view(batch_size, -1, 1))
+            sim_navs_best = torch.max(sim_navs, dim=1).values
+            sims = torch.cat([sims, sim_navs_best.unsqueeze(2)], dim = 1)
+            loss += self.criterion(sims, labels.view(batch_size, 1))
         loss_val = loss.item()
         loss.backward()
         self.optimizer.step()
@@ -131,10 +133,9 @@ class BERTtrainer(Trainer):
             loss = 0
             scores = []
             for qv in qvs:
-                print (qv.size())
                 scores.append(torch.bmm(svs, qv.view(batch_size, -1, 1)))
-                loss += self.criterion(scores.view(batch_size, -1, 1), labels.view(batch_size, 1))
             scores = torch.cat(scores, dim=1)
+            loss = self.criterion(scores.view(batch_size, -1, 1), labels.view(batch_size, 1))
             qv = svs = query = support_sents = None
             return scores, loss.item(), labels, query_size
 
