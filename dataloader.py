@@ -30,6 +30,8 @@ class EpisodeDataset(Dataset):
         return self.labels    
 
     def parse(self, episodes, labels):
+        print (labels)
+        print (labels[0][1][0])
         self.queries = list()
         self.support_sents = list()
         self.labels = list()
