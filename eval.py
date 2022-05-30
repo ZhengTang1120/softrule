@@ -39,8 +39,11 @@ for db in data_batches:
     score, loss, labels, query_size = trainer.predict(db)
     preds += np.argmax(score.squeeze(2).data.cpu().numpy(), axis=1).tolist()
     golds += labels.cpu().tolist()
-print (preds)
-nrp = [0 if p >= 5 else 1 for p in preds]
+
+flat_preds = []
+for p in preds:
+    flat_preds += p
+nrp = [0 if p >= 5 else 1 for p in flat_preds]
 nrg = [0 if g >= 5 else 1 for g in golds]
 
 matched = [1 if p == nrg[i] and p == 1 else 0 for i, p in enumerate(nrp)]
@@ -52,11 +55,14 @@ precision = sum(matched)/sum(nrp)
 f1 = 2 * precision * recall / (precision + recall)
 
 with open("NRC_output_%s.txt"%args.dataset.split('.')[0], 'w') as f:
-    for i, p in enumerate(nrp):
-        if p == 0:
-            f.write("no_relation\n")
-        else:
-            f.write("relation\n")
+    for ps in preds:
+        output = ["no_relation" if p >= 5 else "relation" for p in ps]
+        f.write(output)
+        f.write('\n')
+        # if p == 0:
+        #     f.write("no_relation\n")
+        # else:
+        #     f.write("relation\n")
 
 print ("current precision: %f, recall: %f, f1: %f"%(precision, recall, f1))
 
