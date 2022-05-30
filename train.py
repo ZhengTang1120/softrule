@@ -66,7 +66,7 @@ for epoch in range(opt['num_epoch']):
             preds = []
             golds = []
             for db in dev_batches:
-                score, loss, labels, query_size = trainer.predict(db)
+                score, loss, labels = trainer.predict(db)
                 preds += np.argmax(score.squeeze(2).data.cpu().numpy(), axis=1).tolist()
                 golds += labels.cpu().tolist()
             nrp = [0 if p >= 5 else 1 for p in preds]
