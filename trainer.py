@@ -61,7 +61,8 @@ def unpack_batch(batch, cuda=False, device=0):
     batch_size = support_sents.size(0)
     N = support_sents.size(1)
     k = support_sents.size(2)
-    return query, support_sents, labels, N, k, batch_size
+    query_size = query.size(0) / batch_size
+    return query, support_sents, labels, N, k, batch_size, query_size
 
 
 class BERTtrainer(Trainer):
@@ -96,7 +97,7 @@ class BERTtrainer(Trainer):
                 self.criterion.cuda()
 
     def update(self, batch):
-        query, support_sents, labels, N, k, batch_size = unpack_batch(batch, self.opt['cuda'], self.opt['device'])
+        query, support_sents, labels, N, k, batch_size, query_size = unpack_batch(batch, self.opt['cuda'], self.opt['device'])
         self.encoder.train()
         qv = self.encoder(query)#self.mlp(self.encoder(query))
         svs = self.encoder(support_sents.view(batch_size*N*k, -1))
@@ -118,7 +119,7 @@ class BERTtrainer(Trainer):
         return loss_val
 
     def predict(self, batch):
-        query, support_sents, labels, N, k, batch_size = unpack_batch(batch, self.opt['cuda'], self.opt['device'])
+        query, support_sents, labels, N, k, batch_size, query_size = unpack_batch(batch, self.opt['cuda'], self.opt['device'])
         self.encoder.eval()
         with torch.no_grad():
             qv = self.encoder(query)
@@ -127,10 +128,10 @@ class BERTtrainer(Trainer):
             svs = torch.mean(svs.view(batch_size, N, k, -1), 2)
             svs = torch.cat([svs, self.nav.expand(batch_size, -1,self.in_dim)], 1)
             # svs = self.mlp(svs)
-            scores = torch.bmm(svs, qv.view(batch_size, -1, 1))
-            loss = self.criterion(scores, labels.view(batch_size, 1)).item()
+            scores = torch.bmm(svs, qv.view(batch_size * query_size, -1, 1))
+            loss = self.criterion(scores, labels.view(batch_size * query_size, 1)).item()
             qv = svs = query = support_sents = None
-            return scores, loss, labels
+            return scores, loss, labels, query_size
 
 def generate_m_nav(opt, in_dim=768*2, notas=None):
     if notas is None:
