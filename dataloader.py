@@ -36,7 +36,9 @@ class EpisodeDataset(Dataset):
                 self.support_sents[-1].append([])
                 for shot in way:
                     self.support_sents[-1][-1].append(self.parseTACRED(shot))
-            self.queries.append(self.parseTACRED(ep['meta_test'][0]))
+            self.queries.append([])
+            for q in ep['meta_test']:
+                self.queries[-1].append(self.parseTACRED(q))
             self.labels.append([])
             for j,l in enumerate(labels[i][1]):
                 self.labels[-1].append(labels[i][0].index(l) if l in labels[i][0] else len(labels[i][0]))
@@ -94,7 +96,6 @@ def collate_batch(batch):
     labels = list()
     max_ss_l = max([max([max([len(s) for s in ss]) for ss in d['support_sents']]) for d in batch])
     for d in batch:
-        print (d['query'], d['label'])
         queries += d['query']#.append(d['query'])
         support_sents.append([])
         for ss in d['support_sents']:
