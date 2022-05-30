@@ -129,11 +129,12 @@ class BERTtrainer(Trainer):
             svs = torch.cat([svs, self.nav.expand(batch_size, -1, self.in_dim)], 1)
             # svs = self.mlp(svs)
             loss = 0
+            scores = []
             for qv in qvs:
                 print (qv.size())
-                scores = torch.bmm(svs, qv.view(batch_size, -1, 1))
-                loss += self.criterion(scores.view(batch_size*query_size, -1, 1), labels.view(batch_size * query_size, 1))
-            
+                scores.append(torch.bmm(svs, qv.view(batch_size, -1, 1)))
+                loss += self.criterion(scores.view(batch_size, -1, 1), labels.view(batch_size, 1))
+            scores = torch.cat(scores, dim=1)
             qv = svs = query = support_sents = None
             return scores, loss.item(), labels, query_size
 
