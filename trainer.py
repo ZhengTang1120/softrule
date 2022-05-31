@@ -138,7 +138,7 @@ def generate_m_nav(opt, in_dim=768*2, notas=None):
         with torch.cuda.device(opt['device']):
             return torch.rand((opt['m'], in_dim), requires_grad=False, device=opt['device'])
     else:
-        logger.info("loaded NAV vectors for file %s",notas)
+        print ("loaded NAV vectors for file %s",notas)
         x = np.load(notas)
         x = x[np.random.choice(x.shape[0], opt['m'], replace=False), :]
         x = torch.from_numpy(x).to(device=opt['device'], dtype=torch.float)
