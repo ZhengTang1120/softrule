@@ -73,7 +73,6 @@ class BERTtrainer(Trainer):
         self.encoder = BertEM(opt['bert'])
         # self.mlp = MLP(self.in_dim, opt['hidden_dim'])
         self.nav = generate_m_nav(opt, self.in_dim, notas)
-        Parameter(x, requires_grad=True)
         self.nav = Parameter(self.nav, requires_grad=True)
         self.criterion = nn.CrossEntropyLoss()
 
@@ -142,6 +141,5 @@ def generate_m_nav(opt, in_dim=768*2, notas=None):
         x = np.load(notas)
         x = x[np.random.choice(x.shape[0], opt['m'], replace=False), :]
         x = torch.from_numpy(x).to(device=opt['device'], dtype=torch.float)
-        print (x.size())
         return x
 
