@@ -49,7 +49,7 @@ train_set = EpisodeDataset(opt['data_dir']+opt['train'], tokenizer)
 randsampler = RandomSampler(train_set, num_samples=opt['instances_per_epoch'])
 train_batches_size = opt['instances_per_epoch'] // opt['batch_size']
 dev_set = EpisodeDataset(opt['data_dir']+opt['train'], tokenizer)
-dev_batches = DataLoader(dev_set, batch_size=1, collate_fn=collate_batch)
+randsampler2 = RandomSampler(dev_set, num_samples=opt['instances_per_epoch'])
 opt['num_training_steps'] = train_batches_size * opt['num_epoch']
 opt['num_warmup_steps'] = opt['num_training_steps'] * opt['warmup_prop']
 ensure_dir(opt['save_dir'], verbose=True)
@@ -66,6 +66,7 @@ for epoch in range(opt['num_epoch']):
             print("Evaluating on dev set at epoch %d..."%epoch)
             preds = []
             golds = []
+            dev_batches = DataLoader(dev_set, batch_size=1, collate_fn=collate_batch, sampler=randsampler)
             for db in dev_batches:
                 score, loss, labels = trainer.predict(db)
                 preds += np.argmax(score.squeeze(2).data.cpu().numpy(), axis=1).tolist()
