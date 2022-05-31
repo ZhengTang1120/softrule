@@ -85,7 +85,7 @@ class BERTtrainer(Trainer):
             {'params': [p for n, p in param_optimizer
                         if any(nd in n for nd in no_decay)], 'weight_decay': 0.0},
             {'params': self.nav, 'weight_decay': 1e-03},
-            {'params': mlp_param, 'weight_decay': 1e-03}
+            {'params': [p for n, p in mlp_param], 'weight_decay': 1e-03}
         ]
         self.optimizer = AdamW(optimizer_grouped_parameters, lr=opt['lr'])
         self.scheduler = get_linear_schedule_with_warmup(self.optimizer, 
