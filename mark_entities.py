@@ -14,8 +14,7 @@ episodes = f[0]
 new = [[], f[1]]
 
 for i, ep in enumerate(episodes):
-    new[0].append({'meta_test':[]})
-    new[0].append({'meta_train':[]})
+    new[0].append({'meta_train':[], 'meta_test':[]})
     for j, q in enumerate(ep['meta_test']):
         sentence_info = pre.preprocessing_flow(copy.deepcopy(q))
         tokens_with_markers, h_start, t_start, h_end, t_end = sentence_info
