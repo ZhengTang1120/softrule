@@ -7,7 +7,7 @@ model_name = 'bert-base-cased'
 pre = preprocessing(model_name)
 important_keys = set(['id', 'relation', 'token', 'tokens', 'h', 't', 'head_after_bert', 'tail_after_bert', 'tokens_with_markers', 'head_end', 'tail_end'])
 
-f = json.load(open("dev_episode.json"))
+f = json.load(open("sample_episode.json"))
 
 episodes = f[0]
 new = [[], f[1], f[2]]
