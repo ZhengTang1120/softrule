@@ -28,7 +28,5 @@ for i, ep in enumerate(episodes):
             ep['meta_train'][j][k]["tokens_with_markers"] = tokens_with_markers
             ep['meta_train'][j][k]["head_end"] = h_end
             ep['meta_train'][j][k]["tail_end"] = t_end
-    print (ep)
-    exit()
-# print (json.dumps(f))
+print (json.dumps(f))
             
