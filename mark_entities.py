@@ -11,7 +11,7 @@ f = json.load(open("dev_episode.json"))
 
 episodes = f[0]
 
-new = [[], f[1]]
+new = [[], f[1], f[2], f[3]]
 
 for i, ep in enumerate(episodes):
     new[0].append({'meta_train':[], 'meta_test':[]})
