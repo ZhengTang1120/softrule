@@ -5,6 +5,7 @@ import sys
 
 model_name = 'bert-base-cased'
 pre = preprocessing(model_name)
+important_keys = set(['id', 'relation', 'token', 'tokens', 'h', 't', 'head_after_bert', 'tail_after_bert', 'tokens_with_markers', 'head_end', 'tail_end'])
 
 f = json.load(open("dev_episode.json"))
 
@@ -19,6 +20,9 @@ for i, ep in enumerate(episodes):
         ep['meta_test'][j]["tokens_with_markers"] = tokens_with_markers
         ep['meta_test'][j]["head_end"] = h_end
         ep['meta_test'][j]["tail_end"] = t_end
+        for key in ep['meta_test'][j]:
+            if key not in important_keys:
+                del ep['meta_test'][j][key]
     for j, way in enumerate(ep['meta_train']):
         for k, shot in enumerate(way):
             sentence_info = pre.preprocessing_flow(copy.deepcopy(shot))
@@ -28,5 +32,8 @@ for i, ep in enumerate(episodes):
             ep['meta_train'][j][k]["tokens_with_markers"] = tokens_with_markers
             ep['meta_train'][j][k]["head_end"] = h_end
             ep['meta_train'][j][k]["tail_end"] = t_end
+            for key in ep['meta_train'][j][k]:
+                if key not in important_keys:
+                    del ep['meta_train'][j][k][key]
 print (json.dumps(f))
             
