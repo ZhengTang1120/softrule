@@ -1,5 +1,7 @@
 import json
 from preprocessing_prepeare_sentence import preprocessing
+import copy
+import sys
 
 model_name = 'bert-base-cased'
 pre = preprocessing(model_name)
