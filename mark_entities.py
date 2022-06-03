@@ -18,13 +18,13 @@ for i, ep in enumerate(episodes):
     for j, q in enumerate(ep['meta_test']):
         sentence_info = pre.preprocessing_flow(copy.deepcopy(q))
         tokens_with_markers, h_start, t_start, h_end, t_end = sentence_info
-        ep['meta_test'][j]["head_after_bert"] = h_start
-        ep['meta_test'][j]["tail_after_bert"] = t_start
-        ep['meta_test'][j]["tokens_with_markers"] = tokens_with_markers
-        ep['meta_test'][j]["head_end"] = h_end
-        ep['meta_test'][j]["tail_end"] = t_end
+        # ep['meta_test'][j]["head_after_bert"] = h_start
+        # ep['meta_test'][j]["tail_after_bert"] = t_start
+        # ep['meta_test'][j]["tokens_with_markers"] = tokens_with_markers
+        # ep['meta_test'][j]["head_end"] = h_end
+        # ep['meta_test'][j]["tail_end"] = t_end
 
-        new_instance = {k:v for k, v in ep['meta_test'][j].items() if k in important_keys}
+        new_instance = {k:v for k, v in ep['meta_test'][j].items()}
 
         new[0][-1]['meta_test'].append(new_instance)
 
@@ -33,13 +33,13 @@ for i, ep in enumerate(episodes):
         for k, shot in enumerate(way):
             sentence_info = pre.preprocessing_flow(copy.deepcopy(shot))
             tokens_with_markers, h_start, t_start, h_end, t_end = sentence_info
-            ep['meta_train'][j][k]["head_after_bert"] = h_start
-            ep['meta_train'][j][k]["tail_after_bert"] = t_start
-            ep['meta_train'][j][k]["tokens_with_markers"] = tokens_with_markers
-            ep['meta_train'][j][k]["head_end"] = h_end
-            ep['meta_train'][j][k]["tail_end"] = t_end
+            # ep['meta_train'][j][k]["head_after_bert"] = h_start
+            # ep['meta_train'][j][k]["tail_after_bert"] = t_start
+            # ep['meta_train'][j][k]["tokens_with_markers"] = tokens_with_markers
+            # ep['meta_train'][j][k]["head_end"] = h_end
+            # ep['meta_train'][j][k]["tail_end"] = t_end
 
-            new_instance = {k:v for k, v in ep['meta_train'][j][k].items() if k in important_keys}
+            new_instance = {k:v for k, v in ep['meta_train'][j][k].items()}
 
             new[0][-1]['meta_train'][-1].append(new_instance)
 
