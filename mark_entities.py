@@ -28,6 +28,7 @@ for i, ep in enumerate(episodes):
             q["tokens_with_markers"] = tokens_with_markers
             q["head_end"] = h_end
             q["tail_end"] = t_end
-
-print (json.dumps(f))
+    print (ep)
+    exit()
+# print (json.dumps(f))
             
