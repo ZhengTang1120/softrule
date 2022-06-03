@@ -10,8 +10,7 @@ important_keys = set(['id', 'relation', 'token', 'tokens', 'h', 't', 'head_after
 f = json.load(open("dev_episode.json"))
 
 episodes = f[0]
-print (len(f))
-new = [[], f[1], f[2], f[3]]
+new = [[], f[1], f[2]]
 
 for i, ep in enumerate(episodes):
     new[0].append({'meta_train':[], 'meta_test':[]})
