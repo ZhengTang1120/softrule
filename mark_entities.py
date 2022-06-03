@@ -22,7 +22,7 @@ for i, ep in enumerate(episodes):
         ep['meta_test'][j]["tail_end"] = t_end
         for key in ep['meta_test'][j]:
             if key not in important_keys:
-                del ep['meta_test'][j][key]
+                ep['meta_test'][j].pop(key, None)
     for j, way in enumerate(ep['meta_train']):
         for k, shot in enumerate(way):
             sentence_info = pre.preprocessing_flow(copy.deepcopy(shot))
@@ -34,6 +34,6 @@ for i, ep in enumerate(episodes):
             ep['meta_train'][j][k]["tail_end"] = t_end
             for key in ep['meta_train'][j][k]:
                 if key not in important_keys:
-                    del ep['meta_train'][j][k][key]
+                    ep['meta_train'][j][k].pop(key, None)
 print (json.dumps(f))
             
