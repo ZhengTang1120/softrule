@@ -2,7 +2,7 @@ import json
 from preprocessing_prepeare_sentence import preprocessing
 
 model_name = 'bert-base-cased'
-pre = preprocessing(bert_model)
+pre = preprocessing(model_name)
 for i, ep in enumerate(episodes):
     for j, q in enumerate(ep['meta_test']):
         sentence_info = pre.preprocessing_flow(copy.deepcopy(q))
