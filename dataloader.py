@@ -22,27 +22,19 @@ class EpisodeDataset(Dataset):
 
     def __getitem__(self, idx):
         query = self.queries[idx]
-        support_sents = self.support_sents[idx]
         label = self.labels[idx]
-        return {'query':query, 'support_sents':support_sents, 'label':label} 
+        return {'query':query, 'label':label} 
 
     def get_golds(self):
         return self.labels    
 
     def parse(self, episodes, labels):
         self.queries = list()
-        self.support_sents = list()
         self.labels = list()
         for i, ep in enumerate(episodes):
             for j, q in enumerate(ep['meta_test']):
                 self.queries.append(self.parseTACRED(q))
-                self.labels.append(1 if labels[i][1][j] in self.kept_rels else 0)
-                self.support_sents.append([])
-                for way in ep['meta_train']:
-                    self.support_sents[-1].append([])
-                    for shot in way:
-                        self.support_sents[-1][-1].append(self.parseTACRED(shot))
-            
+                self.labels.append(1 if labels[i][1][j] in self.kept_rels else 0)            
 
     def parseTACRED(self, instance):
         words = list()
@@ -93,15 +85,10 @@ def pad_list(tokens_list, token_len=None):
 
 def collate_batch(batch):
     queries = list()
-    support_sents = list()
     labels = list()
-    max_ss_l = max([max([max([len(s) for s in ss]) for ss in d['support_sents']]) for d in batch])
     for d in batch:
         queries.append(d['query'])
-        support_sents.append([])
-        for ss in d['support_sents']:
-            support_sents[-1].append(pad_list(ss, max_ss_l))
         labels.append(d['label'])
-    return torch.LongTensor(pad_list(queries)), torch.LongTensor(support_sents), torch.LongTensor(labels)
+    return torch.LongTensor(pad_list(queries)), torch.LongTensor(labels)
 
 

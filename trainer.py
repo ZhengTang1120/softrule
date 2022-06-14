@@ -49,16 +49,12 @@ def unpack_batch(batch, cuda=False, device=0):
     if cuda:
         with torch.cuda.device(device):
             query = batch[0].cuda()
-            support_sents = batch[1].cuda()
             labels = batch[2].cuda()
     else:
         query = batch[0]
-        support_sents = batch[1]
         labels = batch[2]
     batch_size = query.size(0)
-    N = support_sents.size(1)
-    k = support_sents.size(2)
-    return query, support_sents, labels, N, k, batch_size
+    return query, labels, batch_size
 
 
 class BERTtrainer(Trainer):
@@ -92,7 +88,7 @@ class BERTtrainer(Trainer):
                 self.criterion.cuda()
 
     def update(self, batch):
-        query, support_sents, labels, N, k, batch_size = unpack_batch(batch, self.opt['cuda'], self.opt['device'])
+        query, labels, batch_size = unpack_batch(batch, self.opt['cuda'], self.opt['device'])
         self.encoder.train()
         qv = self.encoder(query)
         scores = self.mlp(qv)
@@ -102,14 +98,14 @@ class BERTtrainer(Trainer):
         self.optimizer.step()
         self.scheduler.step()
         self.optimizer.zero_grad()
-        qv = svs = query = support_sents = None
+        qv = svs = query = None
         return loss_val
 
     def predict(self, batch):
-        query, support_sents, labels, N, k, batch_size = unpack_batch(batch, self.opt['cuda'], self.opt['device'])
+        query, labels, batch_size = unpack_batch(batch, self.opt['cuda'], self.opt['device'])
         self.encoder.eval()
         with torch.no_grad():
             scores = self.mlp(self.encoder(query))
             loss = self.criterion(scores, labels.view(batch_size, 1)).item()
-            qv = svs = query = support_sents = None
+            qv = svs = query = None
             return scores, loss, labels
