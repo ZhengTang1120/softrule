@@ -74,7 +74,7 @@ for epoch in range(opt['num_epoch']):
                 score, loss, labels = trainer.predict(db)
                 print (score)
                 print (labels)
-                preds += np.around(score.data.cpu().numpy(), axis=1).tolist()
+                preds += np.around(score.data.cpu().numpy()).tolist()
                 golds += labels.cpu().tolist()
             nrp = [0 if p >= 5 else 1 for p in preds]
             nrg = [0 if g >= 5 else 1 for g in golds]
