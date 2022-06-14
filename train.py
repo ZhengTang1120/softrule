@@ -72,20 +72,16 @@ for epoch in range(opt['num_epoch']):
             dev_batches = DataLoader(dev_set, batch_size=1, collate_fn=collate_batch, sampler=randsampler)
             for db in dev_batches:
                 score, loss, labels = trainer.predict(db)
-                print (np.around(score.data.cpu().numpy()).tolist())
-                print (labels.cpu().tolist())
                 preds += np.around(score.data.cpu().numpy()).tolist()
-                golds += labels.cpu().tolist()
-            nrp = [0 if p >= 5 else 1 for p in preds]
-            nrg = [0 if g >= 5 else 1 for g in golds]
+                golds += labels.view(-1).cpu().tolist()
 
-            matched = [1 if p == nrg[j] and p == 1 else 0 for j, p in enumerate(nrp)]
+            matched = [1 if p == golds[j] and p == 1 else 0 for j, p in enumerate(preds)]
             try:
-                recall = sum(matched)/sum(nrg)
+                recall = sum(matched)/sum(golds)
             except ZeroDivisionError:
                 recall = 0
             try:
-                precision = sum(matched)/sum(nrp)
+                precision = sum(matched)/sum(preds)
             except ZeroDivisionError:
                 precision = 0
             try:
