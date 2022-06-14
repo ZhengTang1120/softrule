@@ -14,6 +14,7 @@ class EpisodeDataset(Dataset):
         self.tokenizer = tokenizer
         self.query_size = len(f[2][0][1])
         self.parse(f[0], f[2])
+        self.kept_rels = kept_rels
 
     def __len__(self):
         return len(self.labels)
@@ -34,7 +35,7 @@ class EpisodeDataset(Dataset):
         for i, ep in enumerate(episodes):
             for j, q in enumerate(ep['meta_test']):
                 self.queries.append(self.parseTACRED(q))
-                self.labels.append(1 if labels[i][1][j] in kept_rels else 0)
+                self.labels.append(1 if labels[i][1][j] in self.kept_rels else 0)
                 self.support_sents.append([])
                 for way in ep['meta_train']:
                     self.support_sents[-1].append([])
