@@ -72,7 +72,9 @@ for epoch in range(opt['num_epoch']):
             dev_batches = DataLoader(dev_set, batch_size=1, collate_fn=collate_batch, sampler=randsampler)
             for db in dev_batches:
                 score, loss, labels = trainer.predict(db)
-                preds += np.around(score.squeeze(2).data.cpu().numpy(), axis=1).tolist()
+                print (score)
+                print (labels)
+                preds += np.around(score.data.cpu().numpy(), axis=1).tolist()
                 golds += labels.cpu().tolist()
             nrp = [0 if p >= 5 else 1 for p in preds]
             nrg = [0 if g >= 5 else 1 for g in golds]
