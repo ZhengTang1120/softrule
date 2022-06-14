@@ -11,10 +11,11 @@ class EpisodeDataset(Dataset):
     def __init__(self, filename, tokenizer, kept_rels):
         super(EpisodeDataset).__init__()
         f = json.load(open(filename))
+        self.kept_rels = kept_rels
         self.tokenizer = tokenizer
         self.query_size = len(f[2][0][1])
         self.parse(f[0], f[2])
-        self.kept_rels = kept_rels
+
 
     def __len__(self):
         return len(self.labels)
