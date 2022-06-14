@@ -34,7 +34,7 @@ class MLP(nn.Module):
         after_first_layer = self.first_liner_layer(after_drop_out_layer)
         x = self.tanh(after_first_layer)
         x = self.second_liner_layer(x)
-        return x
+        return torch.sigmoid(x)
 
 def pool(h, mask=None, type='max'):
     if type == 'max':
