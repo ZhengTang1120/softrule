@@ -92,7 +92,6 @@ class BERTtrainer(Trainer):
         self.encoder.train()
         qv = self.encoder(query)
         scores = self.mlp(qv)
-        print (scores)
         loss = self.criterion(scores, labels.view(batch_size, 1).float())
         loss_val = loss.item()
         loss.backward()
@@ -107,6 +106,6 @@ class BERTtrainer(Trainer):
         self.encoder.eval()
         with torch.no_grad():
             scores = self.mlp(self.encoder(query))
-            loss = self.criterion(scores, labels.view(batch_size, 1)).item()
+            loss = self.criterion(scores, labels.view(batch_size, 1).float()).item()
             qv = svs = query = None
             return scores, loss, labels
