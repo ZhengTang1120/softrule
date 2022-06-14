@@ -72,10 +72,14 @@ for epoch in range(opt['num_epoch']):
             dev_batches = DataLoader(dev_set, batch_size=1, collate_fn=collate_batch, sampler=randsampler)
             for db in dev_batches:
                 score, loss, labels = trainer.predict(db)
+                print (labels.view(-1).cpu().tolist())
                 preds += np.around(score.data.cpu().numpy()).tolist()
                 golds += labels.view(-1).cpu().tolist()
 
             matched = [1 if p == golds[j] and p == 1 else 0 for j, p in enumerate(preds)]
+            print (preds)
+            print (golds)
+            print (matched)
             try:
                 recall = sum(matched)/sum(golds)
             except ZeroDivisionError:
