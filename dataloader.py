@@ -8,7 +8,7 @@ ENTITY_TOKEN_TO_ID = {'[OBJ-CAUSE_OF_DEATH]': 3, '[OBJ-CITY]': 2, '[OBJ-DATE]': 
 PAD_ID = 0
 
 class EpisodeDataset(Dataset):
-    def __init__(self, filename, tokenizer):
+    def __init__(self, filename, tokenizer, train_rels):
         super(EpisodeDataset).__init__()
         f = json.load(open(filename))
         self.tokenizer = tokenizer
@@ -34,7 +34,7 @@ class EpisodeDataset(Dataset):
         for i, ep in enumerate(episodes):
             for j, q in enumerate(ep['meta_test']):
                 self.queries.append(self.parseTACRED(q))
-                self.labels.append(labels[i][0].index(labels[i][1][j]) if labels[i][1][j] in labels[i][0] else len(labels[i][0]))
+                self.labels.append(1 if labels[i][1][j] in train_rels else 0)
                 self.support_sents.append([])
                 for way in ep['meta_train']:
                     self.support_sents[-1].append([])
