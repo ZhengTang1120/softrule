@@ -49,10 +49,10 @@ def unpack_batch(batch, cuda=False, device=0):
     if cuda:
         with torch.cuda.device(device):
             query = batch[0].cuda()
-            labels = batch[2].cuda()
+            labels = batch[1].cuda()
     else:
         query = batch[0]
-        labels = batch[2]
+        labels = batch[1]
     batch_size = query.size(0)
     return query, labels, batch_size
 
