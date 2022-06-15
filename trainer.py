@@ -90,6 +90,7 @@ class BERTtrainer(Trainer):
     def update(self, batch):
         query, labels, batch_size = unpack_batch(batch, self.opt['cuda'], self.opt['device'])
         self.encoder.train()
+        self.mlp.train()
         qv = self.encoder(query)
         scores = self.mlp(qv)
         loss = self.criterion(scores, labels.view(batch_size, 1).float())
@@ -104,6 +105,7 @@ class BERTtrainer(Trainer):
     def predict(self, batch):
         query, labels, batch_size = unpack_batch(batch, self.opt['cuda'], self.opt['device'])
         self.encoder.eval()
+        self.mlp.eval()
         with torch.no_grad():
             scores = self.mlp(self.encoder(query))
             loss = self.criterion(scores, labels.view(batch_size, 1).float()).item()
