@@ -6,6 +6,8 @@ import numpy as np
 
 import argparse
 
+import random
+
 def load_config(filename):
     try:
         dump = torch.load(filename)
@@ -27,6 +29,9 @@ opt = load_config(model_file)
 opt['device'] = args.device
 trainer = BERTtrainer(opt)
 trainer.load(model_file)
+
+torch.manual_seed(opt['seed'])
+random.seed(opt['seed'])
 
 tokenizer = BertTokenizer.from_pretrained(opt['bert'])
 
