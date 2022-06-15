@@ -34,7 +34,7 @@ class EpisodeDataset(Dataset):
         for i, ep in enumerate(episodes):
             for j, q in enumerate(ep['meta_test']):
                 self.queries.append(self.parseTACRED(q))
-                self.labels.append(1 if labels[i][1][j] in self.kept_rels else 0)            
+                self.labels.append(1 if labels[i][1][j] in self.kept_rels and labels[i][1][j]!='no_relation' else 0)            
 
     def parseTACRED(self, instance):
         words = list()
