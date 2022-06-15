@@ -41,31 +41,30 @@ data_batches = DataLoader(data_set, batch_size=opt['batch_size'], collate_fn=col
 preds = []
 golds = []
 for db in data_batches:
-    print (db[1])
-#     score, loss, labels = trainer.predict(db)
-#     preds += np.around(score.view(-1).data.cpu().numpy()).tolist()
-#     golds += labels.view(-1).cpu().tolist()
+    score, loss, labels = trainer.predict(db)
+    preds += np.around(score.view(-1).data.cpu().numpy()).tolist()
+    golds += labels.view(-1).cpu().tolist()
 
-# matched = [1 if p == golds[j] and p == 1 else 0 for j, p in enumerate(preds)]
-# print (sum(preds), sum(matched), sum(golds))
-# try:
-#     recall = sum(matched)/sum(golds)
-# except ZeroDivisionError:
-#     recall = 0
-# try:
-#     precision = sum(matched)/sum(preds)
-# except ZeroDivisionError:
-#     precision = 0
-# try:
-#     f1 = 2 * precision * recall / (precision + recall)
-# except ZeroDivisionError:
-#     f1 = 0
+matched = [1 if p == golds[j] and p == 1 else 0 for j, p in enumerate(preds)]
+print (sum(preds), sum(matched), sum(golds))
+try:
+    recall = sum(matched)/sum(golds)
+except ZeroDivisionError:
+    recall = 0
+try:
+    precision = sum(matched)/sum(preds)
+except ZeroDivisionError:
+    precision = 0
+try:
+    f1 = 2 * precision * recall / (precision + recall)
+except ZeroDivisionError:
+    f1 = 0
 
-# with open("NRC_output_%s.txt"%args.dataset.split('.')[0], 'w') as f:
-#     for i in range(0, len(preds), data_set.query_size):
-#         output = ["no_relation" if p == 0 else "relation" for p in preds[i:i+data_set.query_size]]
-#         f.write("\t".join(output))
-#         f.write('\n')
+with open("NRC_output_%s.txt"%args.dataset.split('.')[0], 'w') as f:
+    for i in range(0, len(preds), data_set.query_size):
+        output = ["no_relation" if p == 0 else "relation" for p in preds[i:i+data_set.query_size]]
+        f.write("\t".join(output))
+        f.write('\n')
 
-# print ("current precision: %f, recall: %f, f1: %f"%(precision, recall, f1))
+print ("current precision: %f, recall: %f, f1: %f"%(precision, recall, f1))
 
