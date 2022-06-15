@@ -31,7 +31,7 @@ trainer.load(model_file)
 tokenizer = BertTokenizer.from_pretrained(opt['bert'])
 
 data_set = EpisodeDataset(f'{args.dataset}', tokenizer)
-data_batches = DataLoader(data_set, batch_size=1, collate_fn=collate_batch)
+data_batches = DataLoader(data_set, batch_size=opt['batch_size'], collate_fn=collate_batch, shuffle=False)
 
 preds = []
 golds = []
