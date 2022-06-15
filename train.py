@@ -67,7 +67,7 @@ for epoch in range(opt['num_epoch']):
             print("Evaluating on dev set at epoch %d..."%epoch)
             preds = []
             golds = []
-            dev_batches = DataLoader(dev_set, batch_size=1, collate_fn=collate_batch, shuffle=False)
+            dev_batches = DataLoader(dev_set, batch_size=opt['batch_size'], collate_fn=collate_batch, shuffle=False)
             for db in dev_batches:
                 score, loss, labels = trainer.predict(db)
                 preds += np.around(score.view(-1).data.cpu().numpy()).tolist()
