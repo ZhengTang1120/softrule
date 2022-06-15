@@ -26,15 +26,15 @@ class MLP(nn.Module):
     def __init__(self, in_dim, hidden_dim):
         super().__init__()
         self.drop_layer = nn.Dropout(p=0.1)
-        self.tanh = nn.Tanh()
-        self.first_liner_layer = nn.Linear(in_dim,hidden_dim)
-        self.second_liner_layer = nn.Linear(hidden_dim,1)
+        # self.tanh = nn.Tanh()
+        self.first_liner_layer = nn.Linear(in_dim,1)
+        # self.second_liner_layer = nn.Linear(hidden_dim,1)
     def forward(self, concat_represntentions):
         after_drop_out_layer = self.drop_layer(concat_represntentions)
         after_first_layer = self.first_liner_layer(after_drop_out_layer)
-        x = self.tanh(after_first_layer)
-        x = self.second_liner_layer(x)
-        return torch.sigmoid(x)
+        # x = self.tanh(after_first_layer)
+        # x = self.second_liner_layer(x)
+        return torch.sigmoid(after_first_layer)
 
 def pool(h, mask=None, type='max'):
     if type == 'max':
