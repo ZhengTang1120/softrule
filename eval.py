@@ -40,6 +40,7 @@ preds = []
 golds = []
 for db in data_batches:
     score, loss, labels = trainer.predict(db)
+    print (score)
     preds += np.around(score.view(-1).data.cpu().numpy()).tolist()
     golds += labels.view(-1).cpu().tolist()
 
