@@ -53,20 +53,26 @@ opt['num_warmup_steps'] = opt['num_training_steps'] * opt['warmup_prop']
 ensure_dir(opt['save_dir'], verbose=True)
 eval_step = max(1, train_batches_size // args.eval_per_epoch)
 trainer = BERTtrainer(opt)
+
+train_batches = DataLoader(train_set, batch_size=opt['batch_size'], collate_fn=collate_batch, shuffle=True)
+dev_batches = DataLoader(dev_set, batch_size=opt['batch_size'], collate_fn=collate_batch, shuffle=False)
+
 i = 0
 curr_acc = 0
 for epoch in range(opt['num_epoch']):
-    train_batches = DataLoader(train_set, batch_size=opt['batch_size'], collate_fn=collate_batch, shuffle=True)
+    train_loss = 0
     for b in train_batches:
         loss = trainer.update(b)
+        train_loss += loss
         if (i + 1) % eval_step == 0:
             # eval on dev
             print("Evaluating on dev set at epoch %d..."%epoch)
             preds = []
             golds = []
-            dev_batches = DataLoader(dev_set, batch_size=opt['batch_size'], collate_fn=collate_batch, shuffle=False)
+            dev_loss = 0
             for db in dev_batches:
                 score, loss, labels = trainer.predict(db)
+                dev_loss += loss
                 preds += np.around(score.view(-1).data.cpu().numpy()).tolist()
                 golds += labels.view(-1).cpu().tolist()
 
@@ -86,8 +92,9 @@ for epoch in range(opt['num_epoch']):
             if f1 > curr_acc:
                 curr_acc = f1
                 trainer.save(opt['save_dir']+'/best_model.pt')
-            print ("precision: %f, recall: %f, f1: %f, loss: %f"%(precision, recall, f1, loss))
+            print ("precision: %f, recall: %f, f1: %f, train_loss: %f, dev_loss: %f"%(precision, recall, f1, train_loss/i, dev_loss))
             print ("current best f1: %f, "%(curr_acc))
+            train_loss = 0
         i += 1
 
 
