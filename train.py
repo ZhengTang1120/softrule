@@ -44,13 +44,10 @@ opt = vars(args)
 torch.manual_seed(args.seed)
 random.seed(args.seed)
 
-with open('categories_split.json') as f:
-    splits = json.load(f)
-
 tokenizer = BertTokenizer.from_pretrained(opt['bert'])
-train_set = EpisodeDataset(opt['data_dir']+opt['train'], tokenizer, splits['train'])
+train_set = EpisodeDataset(opt['data_dir']+opt['train'], tokenizer)
 train_batches_size = opt['instances_per_epoch'] // opt['batch_size']
-dev_set = EpisodeDataset(opt['data_dir']+opt['train'], tokenizer, splits['dev'])
+dev_set = EpisodeDataset(opt['data_dir']+opt['train'], tokenizer)
 opt['num_training_steps'] = train_batches_size * opt['num_epoch']
 opt['num_warmup_steps'] = opt['num_training_steps'] * opt['warmup_prop']
 ensure_dir(opt['save_dir'], verbose=True)

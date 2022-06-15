@@ -8,10 +8,9 @@ ENTITY_TOKEN_TO_ID = {'[OBJ-CAUSE_OF_DEATH]': 3, '[OBJ-CITY]': 2, '[OBJ-DATE]': 
 PAD_ID = 0
 
 class EpisodeDataset(Dataset):
-    def __init__(self, filename, tokenizer, kept_rels):
+    def __init__(self, filename, tokenizer):
         super(EpisodeDataset).__init__()
         f = json.load(open(filename))
-        self.kept_rels = kept_rels
         self.tokenizer = tokenizer
         self.query_size = len(f[2][0][1])
         self.parse(f[0], f[2])
@@ -34,7 +33,8 @@ class EpisodeDataset(Dataset):
         for i, ep in enumerate(episodes):
             for j, q in enumerate(ep['meta_test']):
                 self.queries.append(self.parseTACRED(q))
-                self.labels.append(1 if labels[i][1][j] in self.kept_rels and labels[i][1][j]!='no_relation' else 0)            
+                print (labels[i][1][j])
+                self.labels.append(1 if labels[i][1][j]!='no_relation' else 0)            
 
     def parseTACRED(self, instance):
         words = list()
