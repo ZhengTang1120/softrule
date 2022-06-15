@@ -42,7 +42,7 @@ for db in data_batches:
     golds += labels.view(-1).cpu().tolist()
 
 matched = [1 if p == golds[j] and p == 1 else 0 for j, p in enumerate(preds)]
-
+print (sum(preds), sum(matched), sum(golds))
 try:
     recall = sum(matched)/sum(golds)
 except ZeroDivisionError:
