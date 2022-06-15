@@ -33,8 +33,8 @@ tokenizer = BertTokenizer.from_pretrained(opt['bert'])
 with open('categories_split.json') as f:
     splits = json.load(f)
 
-data_set = EpisodeDataset(f'{args.dataset}', tokenizer)
-data_batches = DataLoader(data_set, batch_size=1, collate_fn=collate_batch, splits['test'])
+data_set = EpisodeDataset(f'{args.dataset}', tokenizer, splits['test'])
+data_batches = DataLoader(data_set, batch_size=1, collate_fn=collate_batch)
 
 preds = []
 golds = []
