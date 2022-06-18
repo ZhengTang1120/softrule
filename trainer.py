@@ -61,7 +61,7 @@ class BERTtrainer(Trainer):
     def __init__(self, opt, notas=None):
         self.opt = opt
         config = BertConfig.from_pretrained(opt['bert'])
-        self.in_dim = config.hidden_size * 2
+        self.in_dim = config.hidden_size
         self.hidden_dim = opt['hidden_dim']
         self.encoder = BertEM(opt['bert'])
         self.mlp = MLP(self.in_dim, opt['hidden_dim'])
